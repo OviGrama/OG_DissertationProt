@@ -21,10 +21,17 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private Quaternion m_CameraTargetRot;
         private bool m_cursorIsLocked = true;
 
+        private float recoil = 0f;
+
         public void Init(Transform character, Transform camera)
         {
             m_CharacterTargetRot = character.localRotation;
             m_CameraTargetRot = camera.localRotation;
+        }
+
+        public void Recoil(float amount)
+        {
+            recoil = amount;
         }
 
 
@@ -34,7 +41,16 @@ namespace UnityStandardAssets.Characters.FirstPerson
             float xRot = CrossPlatformInputManager.GetAxis("Mouse Y") * YSensitivity;
 
             m_CharacterTargetRot *= Quaternion.Euler (0f, yRot, 0f);
-            m_CameraTargetRot *= Quaternion.Euler (-xRot, 0f, 0f);
+            m_CameraTargetRot *= Quaternion.Euler (-xRot + -recoil, 0f, 0f);
+
+            if(recoil > 0f)
+            {
+                recoil -= Time.deltaTime * 2;
+            }
+            else
+            {
+                recoil = 0;
+            }
 
             if(clampVerticalRotation)
                 m_CameraTargetRot = ClampRotationAroundXAxis (m_CameraTargetRot);

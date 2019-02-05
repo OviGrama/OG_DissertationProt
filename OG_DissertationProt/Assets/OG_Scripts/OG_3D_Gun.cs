@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityStandardAssets.Characters.FirstPerson;
 
 public class OG_3D_Gun : MonoBehaviour
 {
@@ -9,14 +10,15 @@ public class OG_3D_Gun : MonoBehaviour
     public float fl_fireRate = 15f;
     public float fl_impactForce = 100f;
     public float spread = 0.1f;
+    public float recoil = 1f;
 
     public Camera fpsCam;
     public Transform shootPoint;
 
+    protected FirstPersonController FpsController;
+
     [SerializeField]
     private ParticleSystem MuzzleFlash;
-    [SerializeField]
-    private ParticleSystem BulletTrail;
     [SerializeField]
     private GameObject[] ImpactEffect;
     [SerializeField]
@@ -28,6 +30,7 @@ public class OG_3D_Gun : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        FpsController = GameObject.Find("Player").GetComponent<FirstPersonController>();
         mAudioSource = GetComponent<AudioSource>();
     }
 
@@ -49,8 +52,9 @@ public class OG_3D_Gun : MonoBehaviour
     void Shoot()
     {
         MuzzleFlash.Play();
-        BulletTrail.Play();
         mAudioSource.Play();
+
+        Recoil();
 
         RaycastHit hit;
         if(Physics.Raycast(fpsCam.transform.position, CalculateSpread(spread, shootPoint), out hit, fl_range))
@@ -87,6 +91,11 @@ public class OG_3D_Gun : MonoBehaviour
 
         }
 
+    }
+
+    void Recoil()
+    {
+        FpsController.mouseLook.Recoil(recoil);
     }
 
 }
