@@ -74,9 +74,7 @@ public class OG_3D_Gun : MonoBehaviour
 
             if(hit.collider.tag == "Wall")
             {
-                Transform HitObject = hit.collider.transform;
                 GameObject HoleGO = Instantiate(BulletHole[Random.Range(0,2)], hit.point, Quaternion.FromToRotation(Vector3.up, hit.normal));
-                HoleGO.transform.SetParent(HitObject);
                 GameObject ImpactGO = Instantiate(ImpactEffect[0], hit.point, Quaternion.LookRotation(hit.normal));
                 Destroy(ImpactGO, 2f);
             }

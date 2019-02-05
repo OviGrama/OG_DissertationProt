@@ -45,9 +45,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bulletHoleMesh: {fileID: 100002}
-  usePooling: 1
-  lifetime: 28
-  startFadeTime: 10
+  usePooling: 0
+  lifetime: 10
+  startFadeTime: 5
   fadeRate: 0.6
 --- !u!1 &100002
 GameObject:
