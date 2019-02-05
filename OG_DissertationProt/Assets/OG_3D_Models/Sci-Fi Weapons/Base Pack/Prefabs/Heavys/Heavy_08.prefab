@@ -318,11 +318,11 @@ MonoBehaviour:
   fl_range: 100
   fl_fireRate: 10
   fl_impactForce: 0
-  spread: 0.7
+  spread: 0.3
+  recoil: 0.3
   fpsCam: {fileID: 0}
   shootPoint: {fileID: 0}
   MuzzleFlash: {fileID: 221839501028461256}
-  BulletTrail: {fileID: 0}
   ImpactEffect:
   - {fileID: 100000, guid: 89525715262953844a40648bc626df55, type: 3}
   - {fileID: 100000, guid: ce6790aad23ca5444ac5ab151aea9cec, type: 3}
