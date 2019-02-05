@@ -8,11 +8,19 @@ public class OG_3D_Gun : MonoBehaviour
     public float fl_range = 100f;
     public float fl_fireRate = 15f;
     public float fl_impactForce = 100f;
+    public float spread = 0.1f;
 
     public Camera fpsCam;
+    public Transform shootPoint;
 
-    public ParticleSystem MuzzleFlash;
-    public GameObject ImpactEffect;
+    [SerializeField]
+    private ParticleSystem MuzzleFlash;
+    [SerializeField]
+    private ParticleSystem BulletTrail;
+    [SerializeField]
+    private GameObject[] ImpactEffect;
+    [SerializeField]
+    private GameObject[] BulletHole;
 
     private float fl_nextTimetoFire = 0f;
     private AudioSource mAudioSource;
@@ -33,13 +41,19 @@ public class OG_3D_Gun : MonoBehaviour
         }
     }
 
+    Vector3 CalculateSpread(float spread, Transform shootPoint)
+    {
+        return Vector3.Lerp(shootPoint.TransformDirection(Vector3.forward * 100), Random.onUnitSphere, spread);
+    }
+
     void Shoot()
     {
         MuzzleFlash.Play();
+        BulletTrail.Play();
         mAudioSource.Play();
 
         RaycastHit hit;
-        if(Physics.Raycast(fpsCam.transform.position, fpsCam.transform.forward, out hit, fl_range))
+        if(Physics.Raycast(fpsCam.transform.position, CalculateSpread(spread, shootPoint), out hit, fl_range))
         {
             Debug.Log(hit.transform.name);
 
@@ -54,8 +68,23 @@ public class OG_3D_Gun : MonoBehaviour
                 hit.rigidbody.AddForce(-hit.normal * fl_impactForce);
             }
 
-            GameObject ImpactGO =  Instantiate(ImpactEffect, hit.point, Quaternion.LookRotation(hit.normal));
-            Destroy(ImpactGO, 2f);
+            if(hit.collider.tag == "Wall")
+            {
+                Transform HitObject = hit.collider.transform;
+                GameObject HoleGO = Instantiate(BulletHole[Random.Range(0,2)], hit.point, Quaternion.FromToRotation(Vector3.up, hit.normal));
+                HoleGO.transform.SetParent(HitObject);
+                GameObject ImpactGO = Instantiate(ImpactEffect[0], hit.point, Quaternion.LookRotation(hit.normal));
+                Destroy(ImpactGO, 2f);
+            }
+
+            if (hit.collider.tag == "Ground")
+            {
+                Instantiate(BulletHole[Random.Range(3, 5)], hit.point, Quaternion.FromToRotation(Vector3.up, hit.normal));
+                GameObject ImpactGO = Instantiate(ImpactEffect[1], hit.point, Quaternion.LookRotation(hit.normal));
+                Destroy(ImpactGO, 2f);
+
+            }
+
         }
 
     }

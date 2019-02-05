@@ -5,6 +5,10 @@ TagManager:
   serializedVersion: 2
   tags:
   - Fire
+  - Enemy
+  - Team2
+  - Wall
+  - Ground
   layers:
   - Default
   - TransparentFX
