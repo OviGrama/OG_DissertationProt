@@ -113,14 +113,14 @@ public class OG_3D_Gun : MonoBehaviour
             transform.localPosition = Vector3.Lerp(transform.localPosition, aimPos, Time.deltaTime * fl_ADSSpeed);
             bl_isAiming = true;
             weaponSwRef.fl_swayAmount = 0f;
-            recoil = 0.3f;
+            recoil = 0.5f;
         }
         else
         {
             transform.localPosition = Vector3.Lerp(transform.localPosition, originalPos, Time.deltaTime * fl_ADSSpeed);
             bl_isAiming = false;
             weaponSwRef.fl_swayAmount = 0.1f;
-            recoil = 0.45f;
+            recoil = 0.7f;
         }
     }
 
@@ -129,7 +129,7 @@ public class OG_3D_Gun : MonoBehaviour
         return Vector3.Lerp(shootPoint.TransformDirection(Vector3.forward * 100), Random.onUnitSphere, spread);
     }
 
-    void Shoot()
+    void Shoot() //(int vLayerMask)
     {
         MuzzleFlash.Play();
         mAudioSource.Play();
@@ -137,14 +137,13 @@ public class OG_3D_Gun : MonoBehaviour
         Recoil();
 
         RaycastHit hit;
-        if(Physics.Raycast(fpsCam.transform.position, CalculateSpread(spread, shootPoint), out hit, fl_range))
-        {
-            //if(hit.transform.tag == "Player")
-            //{
-            //    Physics.IgnoreCollision
-            //}
+        int layerMask = 1 << 10;
 
-            Debug.Log(hit.transform.name);
+        layerMask = ~layerMask; // Collides with everything apart from layer 10.
+
+        if(Physics.Raycast(fpsCam.transform.position, CalculateSpread(spread, shootPoint), out hit, fl_range, layerMask))
+        {
+            Debug.Log("LayerMask: " + hit.transform.gameObject.layer + ", Name: " + hit.transform.name);
 
             OG_3D_Enemy enemyScRef = hit.transform.GetComponent<OG_3D_Enemy>();
             if(enemyScRef != null)
