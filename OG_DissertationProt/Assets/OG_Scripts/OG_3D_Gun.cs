@@ -139,6 +139,11 @@ public class OG_3D_Gun : MonoBehaviour
         RaycastHit hit;
         if(Physics.Raycast(fpsCam.transform.position, CalculateSpread(spread, shootPoint), out hit, fl_range))
         {
+            //if(hit.transform.tag == "Player")
+            //{
+            //    Physics.IgnoreCollision
+            //}
+
             Debug.Log(hit.transform.name);
 
             OG_3D_Enemy enemyScRef = hit.transform.GetComponent<OG_3D_Enemy>();
@@ -163,6 +168,14 @@ public class OG_3D_Gun : MonoBehaviour
             {
                 Instantiate(BulletHole[Random.Range(3, 5)], hit.point, Quaternion.FromToRotation(Vector3.up, hit.normal));
                 GameObject ImpactGO = Instantiate(ImpactEffect[1], hit.point, Quaternion.LookRotation(hit.normal));
+                Destroy(ImpactGO, 2f);
+
+            }
+
+            if (hit.collider.tag == "Enemy")
+            {
+                //Instantiate(BulletHole[Random.Range(6, 8)], hit.point, Quaternion.FromToRotation(Vector3.up, hit.normal));
+                GameObject ImpactGO = Instantiate(ImpactEffect[2], hit.point, Quaternion.LookRotation(hit.normal));
                 Destroy(ImpactGO, 2f);
 
             }
