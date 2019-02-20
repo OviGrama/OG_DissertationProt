@@ -113,14 +113,14 @@ public class OG_3D_Gun : MonoBehaviour
             transform.localPosition = Vector3.Lerp(transform.localPosition, aimPos, Time.deltaTime * fl_ADSSpeed);
             bl_isAiming = true;
             weaponSwRef.fl_swayAmount = 0f;
-            recoil = 0.5f;
+            recoil = 0.3f;
         }
         else
         {
             transform.localPosition = Vector3.Lerp(transform.localPosition, originalPos, Time.deltaTime * fl_ADSSpeed);
             bl_isAiming = false;
             weaponSwRef.fl_swayAmount = 0.1f;
-            recoil = 0.7f;
+            recoil = 0.5f;
         }
     }
 
@@ -137,7 +137,7 @@ public class OG_3D_Gun : MonoBehaviour
         Recoil();
 
         RaycastHit hit;
-        int layerMask = 1 << 10;
+        int layerMask = 0 << 10;
 
         layerMask = ~layerMask; // Collides with everything apart from layer 10.
 
@@ -145,7 +145,7 @@ public class OG_3D_Gun : MonoBehaviour
         {
             Debug.Log("LayerMask: " + hit.transform.gameObject.layer + ", Name: " + hit.transform.name);
 
-            OG_3D_Enemy enemyScRef = hit.transform.GetComponent<OG_3D_Enemy>();
+            OG_EnemyAi enemyScRef = hit.transform.GetComponent<OG_EnemyAi>();
             if(enemyScRef != null)
             {
                 enemyScRef.TakeDamage(fl_damage);

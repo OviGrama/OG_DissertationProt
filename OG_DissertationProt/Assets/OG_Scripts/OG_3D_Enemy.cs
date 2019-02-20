@@ -6,6 +6,8 @@ public class OG_3D_Enemy : MonoBehaviour
 {
 
     public float fl_health = 100;
+    public GameObject DeathVFX;
+    public Transform dVFXoffSet;
 
     public void TakeDamage(float amount)
     {
@@ -18,7 +20,9 @@ public class OG_3D_Enemy : MonoBehaviour
 
     void Death()
     {
+        GameObject deathParticle = Instantiate(DeathVFX, dVFXoffSet.transform.position, transform.rotation);
         Destroy(gameObject);
+        Destroy(deathParticle, 3);
     }
 
 
