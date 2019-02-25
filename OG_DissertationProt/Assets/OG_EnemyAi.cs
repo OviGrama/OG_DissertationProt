@@ -34,6 +34,7 @@ public class OG_EnemyAi : MonoBehaviour
     //Sight Var
     public float fl_heightMultiplier;
     public float fl_sightDist = 10;
+    [Range(1f, 15f)] public float fl_ViewOffsetAngle = 5f;
 
     private void Start()
     {
@@ -44,7 +45,7 @@ public class OG_EnemyAi : MonoBehaviour
         waypoints = GameObject.FindGameObjectsWithTag("Waypoint");
         waypointInd = Random.Range(0, waypoints.Length);
 
-        state = OG_EnemyAi.State.PATROL;
+        state = State.PATROL;
 
         bl_alive = true;
 
@@ -53,27 +54,7 @@ public class OG_EnemyAi : MonoBehaviour
         StartCoroutine("FSM");
     }
 
-    private void Update()
-    {
-        //float distance = Vector3.Distance(transform.position, Target.position);
-
-        //if(distance > 8)
-        //{
-        //    if (!NavAgent.updatePosition) NavAgent.updatePosition = true;
-        //    NavAgent.SetDestination(Target.position);
-        //    anim.SetBool("bl_Run", true);
-        //    anim.SetBool("bl_Shoot", false);
-        //}
-        //else
-        //{
-        //    NavAgent.updatePosition = false;
-        //    anim.SetBool("bl_Run", false);
-        //    anim.SetBool("bl_Shoot", true);
-        //}
-
-        //FacePlayer();
-    }
-
+    // Add a timer for this coroutine.
     IEnumerator FSM()
     {
         while (bl_alive)
@@ -81,15 +62,21 @@ public class OG_EnemyAi : MonoBehaviour
             switch (state)
             {
                 case State.PATROL:
+                    print("Patrol");
                     Patrol();
                     break;
+
                 case State.ATTACK:
+                    print("Attack");
                     Attack();
                     break;
+
                 case State.INVESTIGATE:
+                    print("Investigate");
                     Investigate();
                     break;
             }
+
             yield return null;
         }
     }
@@ -97,17 +84,20 @@ public class OG_EnemyAi : MonoBehaviour
     void Patrol()
     {
         NavAgent.stoppingDistance = 3;
-        if(Vector3.Distance(this.transform.position, waypoints[waypointInd].transform.position) >= 2)
+
+        if (Vector3.Distance(this.transform.position, waypoints[waypointInd].transform.position) >= 2)
         {
             NavAgent.SetDestination(waypoints[waypointInd].transform.position);
             NavAgent.updatePosition = true;
             anim.SetBool("bl_Run", true);
             anim.SetBool("bl_Shoot", false);
         }
+
         else if (Vector3.Distance(this.transform.position, waypoints[waypointInd].transform.position) <= 2)
         {
             waypointInd = Random.Range(0, waypoints.Length);
         }
+
         else
         {
             NavAgent.updatePosition = false;
@@ -125,55 +115,25 @@ public class OG_EnemyAi : MonoBehaviour
     void Investigate()
     {
         fl_timer += Time.deltaTime;
-        //RaycastHit hit;
 
-        //Debug.DrawRay(transform.position + Vector3.up * fl_heightMultiplier, transform.forward * fl_sightDist, Color.red);
-        //Debug.DrawRay(transform.position + Vector3.up * fl_heightMultiplier, (transform.forward + transform.right).normalized * fl_sightDist, Color.red);
-        //Debug.DrawRay(transform.position + Vector3.up * fl_heightMultiplier, (transform.forward - transform.right).normalized * fl_sightDist, Color.red);
-        //if(Physics.Raycast (transform.position + Vector3.up * fl_heightMultiplier, transform.forward, out hit , fl_sightDist))
-        //{
-        //    if(hit.collider.gameObject.tag == "Player")
-        //    {
-        //        state = OG_EnemyAi.State.CHASE;
-        //        Target = hit.collider.gameObject;
-        //        FacePlayer();
-        //    }
-        //}
-        //if (Physics.Raycast(transform.position + Vector3.up * fl_heightMultiplier, (transform.forward + transform.right).normalized, out hit, fl_sightDist))
-        //{
-        //    if (hit.collider.gameObject.tag == "Player")
-        //    {
-        //        state = OG_EnemyAi.State.CHASE;
-        //        Target = hit.collider.gameObject;
-        //        FacePlayer();
-        //    }
-        //}
-        //if (Physics.Raycast(transform.position + Vector3.up * fl_heightMultiplier, (transform.forward - transform.right).normalized, out hit, fl_sightDist))
-        //{
-        //    if (hit.collider.gameObject.tag == "Player")
-        //    {
-        //        state = OG_EnemyAi.State.CHASE;
-        //        Target = hit.collider.gameObject;
-        //        FacePlayer();
-        //    }
-        //}
-        NavAgent.SetDestination(this.transform.position);
+        NavAgent.SetDestination(transform.position);
         NavAgent.updatePosition = false;
         transform.LookAt(investigateSpot);
         anim.SetBool("bl_Run", false);
         anim.SetBool("bl_Shoot", false);
+
         if (fl_timer >= investigateWait)
         {
-            state = OG_EnemyAi.State.PATROL;
+            state = State.PATROL;
             fl_timer = 0;
         }
     }
 
     private void OnTriggerEnter(Collider coll)
     {
-        if(coll.tag == "Player")
+        if (coll.tag == "Player")
         {
-            state = OG_EnemyAi.State.INVESTIGATE;
+            state = State.INVESTIGATE;
             investigateSpot = coll.gameObject.transform.position;
             FacePlayer();
         }
@@ -181,43 +141,108 @@ public class OG_EnemyAi : MonoBehaviour
 
     private void FixedUpdate()
     {
+        SwitchState();
+    }
+
+    private GameObject tDetected = null;
+
+    void RaycastFieldOfView()
+    {
         RaycastHit hit;
 
-        Debug.DrawRay(transform.position + Vector3.up * fl_heightMultiplier, transform.forward * fl_sightDist, Color.red);
-        Debug.DrawRay(transform.position + Vector3.up * fl_heightMultiplier, (transform.forward + transform.right).normalized * fl_sightDist, Color.red);
-        Debug.DrawRay(transform.position + Vector3.up * fl_heightMultiplier, (transform.forward - transform.right).normalized * fl_sightDist, Color.red);
-        if (Physics.Raycast(transform.position + Vector3.up * fl_heightMultiplier, transform.forward, out hit, fl_sightDist))
+        for (int i = 0; i < 4; i++)
         {
-            if (hit.collider.gameObject.tag == "Player")
+            if (i == 0) // Centre Ray.
             {
-                state = OG_EnemyAi.State.ATTACK;
-                Target = hit.collider.gameObject;
+                Debug.DrawRay(transform.position + Vector3.up * fl_heightMultiplier, transform.forward * fl_sightDist, Color.red);
+
+                if (Physics.Raycast(transform.position + Vector3.up * fl_heightMultiplier, transform.forward, out hit, fl_sightDist))
+                {
+                    if (hit.collider.gameObject.tag == "Player")
+                    {
+                        tDetected = hit.collider.gameObject;
+                        print(tDetected.name);
+                    }
+
+                    else if (hit.collider.gameObject.tag != "Player")
+                    {
+                        tDetected = null;
+                    }
+                }
+            }
+
+            else
+            {
+                Debug.DrawRay(transform.position + Vector3.up * fl_heightMultiplier, Quaternion.AngleAxis(fl_ViewOffsetAngle * i, transform.up).normalized * transform.forward * fl_sightDist, Color.red);
+
+                if (Physics.Raycast(transform.position + Vector3.up * fl_heightMultiplier, Quaternion.AngleAxis(fl_ViewOffsetAngle * i, transform.up).normalized * transform.forward, out hit, fl_sightDist))
+                {
+                    if (hit.collider.gameObject.tag == "Player")
+                    {
+                        tDetected = hit.collider.gameObject;
+                        print(tDetected.name);
+                    }
+
+                    else if (hit.collider.gameObject.tag != "Player")
+                    {
+                        tDetected = null;
+                    }
+                }
+            }
+        }
+
+        for (int i = -1; i > -4; i--)
+        {
+            Debug.DrawRay(transform.position + Vector3.up * fl_heightMultiplier, Quaternion.AngleAxis(fl_ViewOffsetAngle * i, transform.up).normalized * transform.forward * fl_sightDist, Color.red);
+
+            if (Physics.Raycast(transform.position + Vector3.up * fl_heightMultiplier, Quaternion.AngleAxis(fl_ViewOffsetAngle * i, transform.up).normalized * transform.forward, out hit, fl_sightDist))
+            {
+                if (hit.collider.gameObject.tag == "Player")
+                {
+                    tDetected = hit.collider.gameObject;
+                    print(tDetected.name);
+                }
+
+                else if (hit.collider.gameObject.tag != "Player")
+                {
+                    tDetected = null;
+                }
+            }
+        }
+    }
+
+    // Make this a couroutine, make it happen 10 a second.
+    void SwitchState()
+    {
+        RaycastFieldOfView();
+
+        if (tDetected == null)
+        {
+            state = State.PATROL;
+        }
+
+        // If the NPC detects the player
+        if (tDetected != null) 
+        {
+            if (tDetected.tag == "Player")
+            {
+                state = State.ATTACK;
+                Target = tDetected;
                 FacePlayer();
             }
         }
-        if (Physics.Raycast(transform.position + Vector3.up * fl_heightMultiplier, (transform.forward + transform.right).normalized, out hit, fl_sightDist))
+
+        if (state == State.ATTACK)
         {
-            if (hit.collider.gameObject.tag == "Player")
+            if (tDetected == null)
             {
-                state = OG_EnemyAi.State.ATTACK;
-                Target = hit.collider.gameObject;
-                FacePlayer();
-            }
-        }
-        if (Physics.Raycast(transform.position + Vector3.up * fl_heightMultiplier, (transform.forward - transform.right).normalized, out hit, fl_sightDist))
-        {
-            if (hit.collider.gameObject.tag == "Player")
-            {
-                state = OG_EnemyAi.State.ATTACK;
-                Target = hit.collider.gameObject;
-                FacePlayer();
+                state = State.INVESTIGATE;
             }
         }
     }
 
     private void FacePlayer()
     {
-        
         Vector3 lookPos = Target.transform.position - transform.position;
         lookPos.y = 0;
         Quaternion rotation = Quaternion.LookRotation(lookPos);
@@ -227,6 +252,7 @@ public class OG_EnemyAi : MonoBehaviour
     public void TakeDamage(float amount)
     {
         fl_health -= amount;
+
         if (fl_health <= 0f)
         {
             Death();
