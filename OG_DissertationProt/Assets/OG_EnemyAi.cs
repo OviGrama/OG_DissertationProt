@@ -35,7 +35,7 @@ public class OG_EnemyAi : MonoBehaviour
     public float fl_heightMultiplier;
     public float fl_sightDist = 10;
     [Range(1f, 15f)] public float fl_ViewOffsetAngle = 5f;
-
+    [Range(4, 7)]public int in_NumberOFRays = 4;
     private void Start()
     {
         NavAgent = GetComponent<NavMeshAgent>();
@@ -150,7 +150,7 @@ public class OG_EnemyAi : MonoBehaviour
     {
         RaycastHit hit;
 
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < in_NumberOFRays; i++)
         {
             if (i == 0) // Centre Ray.
             {
@@ -191,7 +191,7 @@ public class OG_EnemyAi : MonoBehaviour
             }
         }
 
-        for (int i = -1; i > -4; i--)
+        for (int i = -1; i > -in_NumberOFRays; i--)
         {
             Debug.DrawRay(transform.position + Vector3.up * fl_heightMultiplier, Quaternion.AngleAxis(fl_ViewOffsetAngle * i, transform.up).normalized * transform.forward * fl_sightDist, Color.red);
 
