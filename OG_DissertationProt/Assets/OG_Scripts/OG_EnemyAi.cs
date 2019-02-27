@@ -23,24 +23,33 @@ public class OG_EnemyAi : MonoBehaviour
     public bool bl_alive;
 
     // Patrolling Var
+    public float fl_patrollingStoppingDistance = 3f;
     public GameObject[] waypoints;
     private int waypointInd;
 
     // Investigating Var
     private Vector3 investigateSpot;
     private float fl_timer = 0;
-    public float investigateWait = 10;
+    public float investigateWait = 1;
 
     //Sight Var
+
     public float fl_heightMultiplier;
-    public float fl_sightDist = 10;
+    public float fl_sightDist = 30;
+    public float fl_ShootingStoppingDistance;
+    private SphereCollider sphCol;
     [Range(1f, 15f)] public float fl_ViewOffsetAngle = 5f;
     [Range(4, 7)]public int in_NumberOFRays = 4;
+    public GameObject tDetected = null;
+
+
+
     private void Start()
     {
         NavAgent = GetComponent<NavMeshAgent>();
         Target = GameObject.FindGameObjectWithTag("Player");
         anim = GetComponent<Animator>();
+        sphCol = GetComponent<SphereCollider>();
 
         waypoints = GameObject.FindGameObjectsWithTag("Waypoint");
         waypointInd = Random.Range(0, waypoints.Length);
@@ -52,6 +61,8 @@ public class OG_EnemyAi : MonoBehaviour
         fl_heightMultiplier = 1.1f;
 
         StartCoroutine("FSM");
+
+        sphCol.radius = fl_sightDist;
     }
 
     // Add a timer for this coroutine.
@@ -83,7 +94,7 @@ public class OG_EnemyAi : MonoBehaviour
 
     void Patrol()
     {
-        NavAgent.stoppingDistance = 3;
+        NavAgent.stoppingDistance = fl_patrollingStoppingDistance;
 
         if (Vector3.Distance(this.transform.position, waypoints[waypointInd].transform.position) >= 2)
         {
@@ -106,7 +117,7 @@ public class OG_EnemyAi : MonoBehaviour
 
     void Attack()
     {
-        NavAgent.stoppingDistance = 10;
+        NavAgent.stoppingDistance = fl_ShootingStoppingDistance;
         NavAgent.SetDestination(Target.transform.position);
         anim.SetBool("bl_Run", false);
         anim.SetBool("bl_Shoot", true);
@@ -142,9 +153,11 @@ public class OG_EnemyAi : MonoBehaviour
     private void FixedUpdate()
     {
         SwitchState();
+
+        fl_ShootingStoppingDistance = fl_sightDist;
     }
 
-    private GameObject tDetected = null;
+    
 
     void RaycastFieldOfView()
     {
@@ -236,7 +249,7 @@ public class OG_EnemyAi : MonoBehaviour
         {
             if (tDetected == null)
             {
-                state = State.INVESTIGATE;
+                state = State.PATROL;
             }
         }
     }
@@ -262,6 +275,7 @@ public class OG_EnemyAi : MonoBehaviour
     void Death()
     {
         GameObject deathParticle = Instantiate(DeathVFX, dVFXoffSet.transform.position, transform.rotation);
+        bl_alive = false;
         Destroy(gameObject);
         Destroy(deathParticle, 3);
     }

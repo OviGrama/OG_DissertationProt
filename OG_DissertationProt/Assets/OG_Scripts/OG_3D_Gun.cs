@@ -16,9 +16,10 @@ public class OG_3D_Gun : MonoBehaviour
     public float fl_ADSSpeed = 8f;
     public Vector3 aimPos;
     private bool bl_isAiming = false;
+    public bool bl_isShooting;
 
 
-[Header("Reloading Properties")]
+    [Header("Reloading Properties")]
     public int in_bulletsPerMag = 30;
     public int in_bulletsLeft;
     public int in_currentBullets;
@@ -81,6 +82,7 @@ public class OG_3D_Gun : MonoBehaviour
         {
             fl_nextTimetoFire = Time.time + 1f / fl_fireRate;
             Shoot();
+            bl_isShooting = true;
         }
 
         if (Input.GetKeyDown(KeyCode.R))
@@ -137,7 +139,7 @@ public class OG_3D_Gun : MonoBehaviour
         Recoil();
 
         RaycastHit hit;
-        int layerMask = 0 << 10;
+        int layerMask = 0 << 11;
 
         layerMask = ~layerMask; // Collides with everything apart from layer 10.
 
