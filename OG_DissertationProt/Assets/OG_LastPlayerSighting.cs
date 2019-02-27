@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class OG_EnemySight : MonoBehaviour
+public class OG_LastPlayerSighting : MonoBehaviour
 {
     // Start is called before the first frame update
     void Start()
