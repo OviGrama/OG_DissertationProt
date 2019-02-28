@@ -32,7 +32,7 @@ public class OG_EnemyAi : MonoBehaviour
     private float fl_timer = 0;
     public float investigateWait = 1;
 
-    //Sight Var
+    //Shooting Var
 
     public float fl_heightMultiplier;
     public float fl_sightDist = 30;
@@ -40,7 +40,12 @@ public class OG_EnemyAi : MonoBehaviour
     private SphereCollider sphCol;
     [Range(1f, 15f)] public float fl_ViewOffsetAngle = 5f;
     [Range(4, 7)]public int in_NumberOFRays = 4;
-    public GameObject tDetected = null;
+    private GameObject tDetected = null;
+    private OG_PlayerHealth pcHealthRef;
+    public float fl_shootingDmg;
+    private float fl_nextTimeToFire;
+    public float fl_fireRate;
+    public AudioClip shootingSound;
 
 
 
@@ -50,6 +55,7 @@ public class OG_EnemyAi : MonoBehaviour
         Target = GameObject.FindGameObjectWithTag("Player");
         anim = GetComponent<Animator>();
         sphCol = GetComponent<SphereCollider>();
+        pcHealthRef = GameObject.Find("Player").GetComponent<OG_PlayerHealth>();
 
         waypoints = GameObject.FindGameObjectsWithTag("Waypoint");
         waypointInd = Random.Range(0, waypoints.Length);
@@ -121,6 +127,17 @@ public class OG_EnemyAi : MonoBehaviour
         NavAgent.SetDestination(Target.transform.position);
         anim.SetBool("bl_Run", false);
         anim.SetBool("bl_Shoot", true);
+        if(Time.time >= fl_nextTimeToFire && !pcHealthRef.bl_playerDead)
+        {
+            fl_nextTimeToFire = Time.time + 1f / fl_fireRate;
+            DamageThePlayer();
+        }
+    }
+
+    void DamageThePlayer()
+    {
+        AudioSource.PlayClipAtPoint(shootingSound, transform.position);
+        pcHealthRef.TakeDamage(fl_shootingDmg);
     }
 
     void Investigate()
@@ -237,11 +254,15 @@ public class OG_EnemyAi : MonoBehaviour
         // If the NPC detects the player
         if (tDetected != null) 
         {
-            if (tDetected.tag == "Player")
+            if (tDetected.tag == "Player" && !pcHealthRef.bl_playerDead)
             {
                 state = State.ATTACK;
                 Target = tDetected;
                 FacePlayer();
+            }
+            else
+            {
+                state = State.PATROL;
             }
         }
 
@@ -272,7 +293,7 @@ public class OG_EnemyAi : MonoBehaviour
         }
     }
 
-    void Death()
+    public void Death()
     {
         GameObject deathParticle = Instantiate(DeathVFX, dVFXoffSet.transform.position, transform.rotation);
         bl_alive = false;

@@ -9,12 +9,13 @@ public class OG_PlayerHealth : MonoBehaviour
     public float fl_pcHealth = 100f;
     public float fl_resetAfterDeathTimer = 5f;
     public AudioClip deathClip;
+    public AudioClip painClip;
 
     //private Animator anim;
 
     private FirstPersonController playerController;
     private float fl_resetTimer;
-    private bool bl_playerDead;
+    public bool bl_playerDead;
 
 
     private void Awake()
@@ -23,21 +24,23 @@ public class OG_PlayerHealth : MonoBehaviour
         playerController = GameObject.Find("Player").GetComponent<FirstPersonController>();
     }
 
-    //private void Update()
-    //{
-    //    if (fl_pcHealth < 0f)
-    //    {
-    //        if (!bl_playerDead)
-    //        {
-    //            PlayerDying();
-    //        }
-    //        else
-    //        {
-    //            PlayerDead();
-    //            LevelReset();
-    //        }
-    //    }
-    //}
+    private void Update()
+    {
+        if (fl_pcHealth <= 0f)
+        {
+            if (!bl_playerDead)
+            {
+                PlayerDying();
+            }
+            else
+            {
+                PlayerDead();
+                LevelReset();
+            }
+
+            bl_playerDead = true;
+        }
+    }
 
     void PlayerDying()
     {
@@ -62,5 +65,6 @@ public class OG_PlayerHealth : MonoBehaviour
     public void TakeDamage(float amount)
     {
         fl_pcHealth -= amount;
+        AudioSource.PlayClipAtPoint(painClip, transform.position);
     }
 }
