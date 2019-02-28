@@ -60,7 +60,6 @@ public class OG_3D_Gun : MonoBehaviour
         weaponSwRef = GameObject.Find("Weapon Holder").GetComponent<OG_WeaponSway>();
         mAudioSource = GetComponent<AudioSource>();
         AmmoTxt = GameObject.Find("AmmoText").GetComponent<Text>();
-        enemyAiRef = GameObject.FindGameObjectWithTag("Enemy").GetComponent<OG_EnemyAi>();
         in_currentBullets = in_bulletsPerMag;
         originalPos = transform.localPosition;
 
@@ -181,14 +180,14 @@ public class OG_3D_Gun : MonoBehaviour
                 Destroy(ImpactGO, 2f);
             }
 
-            if (hit.collider.tag == "HeadShot")
-            {
-                //Instantiate(BulletHole[Random.Range(6, 8)], hit.point, Quaternion.FromToRotation(Vector3.up, hit.normal));
-                GameObject ImpactGO = Instantiate(ImpactEffect[2], hit.point, Quaternion.LookRotation(hit.normal));
-                Destroy(ImpactGO, 2f);
-                fl_damage = 100f;
-                Debug.Log("HeadShot");
-            }
+            //if (hit.collider.tag == "HeadShot")
+            //{
+            //    //Instantiate(BulletHole[Random.Range(6, 8)], hit.point, Quaternion.FromToRotation(Vector3.up, hit.normal));
+            //    GameObject ImpactGO = Instantiate(ImpactEffect[2], hit.point, Quaternion.LookRotation(hit.normal));
+            //    Destroy(ImpactGO, 2f);
+            //    fl_damage = 100f;
+            //    Debug.Log("HeadShot");
+            //}
 
         }
 
@@ -196,7 +195,7 @@ public class OG_3D_Gun : MonoBehaviour
 
         in_currentBullets--;
         UpdateAmmoUI();
-        Debug.Log(in_currentBullets + " bullets left in clip!");
+        //Debug.Log(in_currentBullets + " bullets left in clip!");
         
     }
 
