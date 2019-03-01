@@ -35,11 +35,11 @@ public class OG_EnemyAi : MonoBehaviour
     //Shooting Var
 
     public float fl_heightMultiplier;
-    public float fl_sightDist = 30;
+    public float fl_sightDist;
     public float fl_ShootingStoppingDistance;
     private SphereCollider sphCol;
-    [Range(1f, 15f)] public float fl_ViewOffsetAngle = 5f;
-    [Range(4, 7)]public int in_NumberOFRays = 4;
+    [Range(1f, 15f)] public float fl_ViewOffsetAngle = 4f;
+    [Range(4, 50)]public int in_NumberOFRays = 4;
     private GameObject tDetected = null;
     private OG_PlayerHealth pcHealthRef;
     public float fl_shootingDmg;
@@ -161,8 +161,18 @@ public class OG_EnemyAi : MonoBehaviour
     {
         if (coll.tag == "Player")
         {
-            state = State.INVESTIGATE;
-            investigateSpot = coll.gameObject.transform.position;
+            state = State.ATTACK;
+            //investigateSpot = coll.gameObject.transform.position;
+            FacePlayer();
+        }
+    }
+
+    private void OnTriggerExit(Collider coll)
+    {
+        if(coll.tag == "Player")
+        {
+            state = State.ATTACK;
+            //investigateSpot = coll.gameObject.transform.position;
             FacePlayer();
         }
     }
@@ -172,6 +182,7 @@ public class OG_EnemyAi : MonoBehaviour
         SwitchState();
 
         fl_ShootingStoppingDistance = fl_sightDist;
+        sphCol.radius = fl_sightDist + 2;
     }
 
     

@@ -7,7 +7,8 @@ using UnityStandardAssets.Characters.FirstPerson;
 public class OG_3D_Gun : MonoBehaviour
 {
     [Header ("Weapon Properties")]
-    public float fl_damage = 10f;
+    public int in_minDMG = 5;
+    public int in_maxDMG = 10;
     public float fl_range = 100f;
     public float fl_fireRate = 15f;
     public float fl_impactForce = 100f;
@@ -17,6 +18,7 @@ public class OG_3D_Gun : MonoBehaviour
     public Vector3 aimPos;
     private bool bl_isAiming = false;
     public bool bl_isShooting;
+    public AudioClip shellFalling;
 
 
     [Header("Reloading Properties")]
@@ -95,6 +97,7 @@ public class OG_3D_Gun : MonoBehaviour
         }
 
         ADS();
+        UpdateAmmoUI();
     }
 
     void UpdateAmmoUI()
@@ -135,22 +138,31 @@ public class OG_3D_Gun : MonoBehaviour
     {
         MuzzleFlash.Play();
         mAudioSource.Play();
+        //StartCoroutine(SheelSoundDelay());
 
         Recoil();
 
         RaycastHit hit;
-        int layerMask = 0 << 10;
+        int layerMask = 1 << 10;
 
         layerMask = ~layerMask; // Collides with everything apart from layer 10.
+        
 
         if(Physics.Raycast(fpsCam.transform.position, CalculateSpread(spread, shootPoint), out hit, fl_range, layerMask))
         {
+            //float fl_fractionalDistance = (fl_scaledDmgComp - Vector3.Distance(transform.position, hit.transform.position)) / fl_scaledDmgComp;
+            //Debug.Log("Fractional distance is " + fl_fractionalDistance);
+            //float damage = fl_scaledDMG * fl_fractionalDistance + fl_minDMG;
+
+            int int_randomDamage = Random.Range(in_minDMG, in_maxDMG);
+            Debug.Log("Random damage is " + int_randomDamage);
+
             Debug.Log("LayerMask: " + hit.transform.gameObject.layer + ", Name: " + hit.transform.name);
 
             OG_EnemyAi enemyScRef = hit.transform.GetComponent<OG_EnemyAi>();
             if(enemyScRef != null)
             {
-                enemyScRef.TakeDamage(fl_damage);
+                enemyScRef.TakeDamage(int_randomDamage);
             }
 
             if (hit.rigidbody != null)
@@ -197,6 +209,13 @@ public class OG_3D_Gun : MonoBehaviour
         UpdateAmmoUI();
         //Debug.Log(in_currentBullets + " bullets left in clip!");
         
+    }
+
+    IEnumerator SheelSoundDelay()
+    {
+        float fl_randomDelay = Random.Range(1.5f, 3f);
+        yield return new WaitForSeconds(fl_randomDelay);
+        AudioSource.PlayClipAtPoint(shellFalling, transform.position);
     }
 
     IEnumerator Reload()

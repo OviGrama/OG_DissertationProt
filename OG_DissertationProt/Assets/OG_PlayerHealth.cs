@@ -3,10 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityStandardAssets.Characters.FirstPerson;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class OG_PlayerHealth : MonoBehaviour
 {
-    public float fl_pcHealth = 100f;
+    public float fl_currnetPcHealth { get; set; }
+    public float fl_maxHealth { get; set; }
+
+    public Slider healthBar;
+    public Text tx_healthTxt;
+    public string healthString;
+
+    public float fl_displayHelathInInsp;
     public float fl_resetAfterDeathTimer = 5f;
     public AudioClip deathClip;
     public AudioClip painClip;
@@ -22,11 +30,16 @@ public class OG_PlayerHealth : MonoBehaviour
     {
         //anim = GetComponent<Animator>();
         playerController = GameObject.Find("Player").GetComponent<FirstPersonController>();
+        fl_maxHealth = 100;
+        fl_currnetPcHealth = fl_maxHealth;
+        fl_displayHelathInInsp = fl_currnetPcHealth;
+
+        healthBar.value = CalculateHealth();
     }
 
     private void Update()
     {
-        if (fl_pcHealth <= 0f)
+        if (fl_currnetPcHealth <= 0f)
         {
             if (!bl_playerDead)
             {
@@ -40,7 +53,29 @@ public class OG_PlayerHealth : MonoBehaviour
 
             bl_playerDead = true;
         }
+
+        fl_displayHelathInInsp = fl_currnetPcHealth;
+
+        if(fl_currnetPcHealth > fl_maxHealth)
+        {
+            fl_currnetPcHealth = fl_maxHealth;
+        }
+
+        healthBar.value = CalculateHealth();
+        UpdateHealthUI();
+
     }
+
+    void UpdateHealthUI()
+    {
+        healthString = fl_currnetPcHealth + " Health";
+        tx_healthTxt.text = healthString.ToString();
+    }
+
+    float CalculateHealth()
+    {
+        return fl_currnetPcHealth / fl_maxHealth;
+    } 
 
     void PlayerDying()
     {
@@ -64,7 +99,7 @@ public class OG_PlayerHealth : MonoBehaviour
 
     public void TakeDamage(float amount)
     {
-        fl_pcHealth -= amount;
+        fl_currnetPcHealth -= amount;
         AudioSource.PlayClipAtPoint(painClip, transform.position);
     }
 }
