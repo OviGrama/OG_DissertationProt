@@ -14,7 +14,7 @@ public class OG_PlayerHealth : MonoBehaviour
     public Text tx_healthTxt;
     public string healthString;
 
-    public float fl_displayHelathInInsp;
+    public float fl_displayHealthInInsp;
     public float fl_resetAfterDeathTimer = 5f;
     public AudioClip deathClip;
     public AudioClip painClip;
@@ -32,7 +32,7 @@ public class OG_PlayerHealth : MonoBehaviour
         playerController = GameObject.Find("Player").GetComponent<FirstPersonController>();
         fl_maxHealth = 100;
         fl_currnetPcHealth = fl_maxHealth;
-        fl_displayHelathInInsp = fl_currnetPcHealth;
+        fl_displayHealthInInsp = fl_currnetPcHealth;
 
         healthBar.value = CalculateHealth();
     }
@@ -54,7 +54,7 @@ public class OG_PlayerHealth : MonoBehaviour
             bl_playerDead = true;
         }
 
-        fl_displayHelathInInsp = fl_currnetPcHealth;
+        fl_displayHealthInInsp = fl_currnetPcHealth;
 
         if(fl_currnetPcHealth > fl_maxHealth)
         {

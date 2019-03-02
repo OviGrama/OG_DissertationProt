@@ -18,6 +18,9 @@ public class OG_PickUp : MonoBehaviour
     private OG_3D_Gun gunRef;
     private OG_PlayerHealth healthRef;
 
+    public AudioClip ammoPickUp;
+    public AudioClip healthPickUp;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -31,17 +34,28 @@ public class OG_PickUp : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if(pickUpType == PickUpType.Ammo)
+        if (other.gameObject.tag == "Player")
         {
-            gunRef.in_bulletsLeft += in_ammoAmount;
-            Destroy(gameObject);
-        }
+            if (pickUpType == PickUpType.Ammo)
+            {
+                AudioSource.PlayClipAtPoint(ammoPickUp, transform.position);
+                gunRef.in_bulletsLeft += in_ammoAmount;
+                Destroy(gameObject);
+            }
 
-        if(pickUpType == PickUpType.Health)
-        {
-            healthRef.fl_currnetPcHealth += in_healthAmount;
-            Destroy(gameObject);
+            if (pickUpType == PickUpType.Health)
+            {
+                if (healthRef.fl_currnetPcHealth == healthRef.fl_maxHealth)
+                {
+                    return;
+                }
+                else
+                {
+                    AudioSource.PlayClipAtPoint(healthPickUp, transform.position);
+                    healthRef.fl_currnetPcHealth += in_healthAmount;
+                    Destroy(gameObject);
+                }
+            }
         }
-        
     }
 }

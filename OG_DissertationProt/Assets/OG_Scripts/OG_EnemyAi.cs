@@ -2,11 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
+
 public class OG_EnemyAi : MonoBehaviour
 {
-    public float fl_health = 100;
+    public float fl_maxHealth = 100;
+    public float fl_currentHealth;
     public GameObject DeathVFX;
     public Transform dVFXoffSet;
+
+    public Slider healthBar;
 
     GameObject Target;
     NavMeshAgent NavAgent;
@@ -16,7 +21,7 @@ public class OG_EnemyAi : MonoBehaviour
     {
         PATROL,
         ATTACK,
-        INVESTIGATE,
+        SOUNDAWARE,
     }
 
     public State state;
@@ -31,6 +36,9 @@ public class OG_EnemyAi : MonoBehaviour
     private Vector3 investigateSpot;
     private float fl_timer = 0;
     public float investigateWait = 1;
+
+    // Sound aware Var
+    private GameObject sDetected = null;
 
     //Shooting Var
 
@@ -69,7 +77,26 @@ public class OG_EnemyAi : MonoBehaviour
         StartCoroutine("FSM");
 
         sphCol.radius = fl_sightDist;
+
+        fl_currentHealth = fl_maxHealth;
+
     }
+
+    private void FixedUpdate()
+    {
+        SwitchState();
+
+        fl_ShootingStoppingDistance = fl_sightDist;
+        sphCol.radius = fl_sightDist + 2;
+        healthBar.value = CalculateHealth();
+    }
+
+    float CalculateHealth()
+    {
+        return fl_currentHealth / fl_maxHealth;
+    }
+
+
 
     // Add a timer for this coroutine.
     IEnumerator FSM()
@@ -88,9 +115,9 @@ public class OG_EnemyAi : MonoBehaviour
                     Attack();
                     break;
 
-                case State.INVESTIGATE:
+                case State.SOUNDAWARE:
                     print("Investigate");
-                    Investigate();
+                    SoundAware();
                     break;
             }
 
@@ -140,50 +167,33 @@ public class OG_EnemyAi : MonoBehaviour
         pcHealthRef.TakeDamage(fl_shootingDmg);
     }
 
-    void Investigate()
+    void SoundAware()
     {
-        fl_timer += Time.deltaTime;
-
-        NavAgent.SetDestination(transform.position);
-        NavAgent.updatePosition = false;
-        transform.LookAt(investigateSpot);
-        anim.SetBool("bl_Run", false);
+        NavAgent.SetDestination(Target.transform.position);
+        NavAgent.updatePosition = true;
+        anim.SetBool("bl_Run", true);
         anim.SetBool("bl_Shoot", false);
-
-        if (fl_timer >= investigateWait)
-        {
-            state = State.PATROL;
-            fl_timer = 0;
-        }
     }
 
     private void OnTriggerEnter(Collider coll)
     {
-        if (coll.tag == "Player")
+        if (coll.gameObject.tag == "SoundRadius")
         {
-            state = State.ATTACK;
-            //investigateSpot = coll.gameObject.transform.position;
+            sDetected = coll.gameObject;
+            print(sDetected.name);
             FacePlayer();
         }
     }
 
-    private void OnTriggerExit(Collider coll)
-    {
-        if(coll.tag == "Player")
-        {
-            state = State.ATTACK;
-            //investigateSpot = coll.gameObject.transform.position;
-            FacePlayer();
-        }
-    }
+    //private void OnTriggerExit(Collider coll)
+    //{
+    //    if(coll.tag == "SoundAware")
+    //    {
+    //        state = State.PATROL;
+    //        FacePlayer();
+    //    }
+    //}
 
-    private void FixedUpdate()
-    {
-        SwitchState();
-
-        fl_ShootingStoppingDistance = fl_sightDist;
-        sphCol.radius = fl_sightDist + 2;
-    }
 
     
 
@@ -284,6 +294,16 @@ public class OG_EnemyAi : MonoBehaviour
                 state = State.PATROL;
             }
         }
+
+        if(state == State.PATROL && sDetected != null && tDetected == null)
+        {
+            if(sDetected.tag == "SoundAware")
+            {
+                Debug.Log("The detected tag is" + sDetected.tag);
+                state = State.SOUNDAWARE;
+            }
+            
+        }
     }
 
     private void FacePlayer()
@@ -294,11 +314,11 @@ public class OG_EnemyAi : MonoBehaviour
         transform.rotation = Quaternion.Slerp(transform.rotation, rotation, 5);
     }
 
-    public void TakeDamage(float amount)
+    public void TakeDamage(int amount)
     {
-        fl_health -= amount;
+        fl_currentHealth -= amount;
 
-        if (fl_health <= 0f)
+        if (fl_currentHealth <= 0f)
         {
             Death();
         }
