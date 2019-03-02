@@ -12,6 +12,8 @@ public class OG_3D_Gun : MonoBehaviour
     public float fl_range = 100f;
     public float fl_fireRate = 15f;
     public float fl_impactForce = 100f;
+    public float fl_soundRadius;
+    public SphereCollider soundSphereColl;
     public float spread = 0.1f;
     public float recoil = 1f;
     public float fl_ADSSpeed = 8f;
@@ -19,6 +21,7 @@ public class OG_3D_Gun : MonoBehaviour
     private bool bl_isAiming = false;
     public bool bl_isShooting;
     public AudioClip shellFalling;
+    public GameObject soundRadius;
 
 
     [Header("Reloading Properties")]
@@ -64,6 +67,7 @@ public class OG_3D_Gun : MonoBehaviour
         AmmoTxt = GameObject.Find("AmmoText").GetComponent<Text>();
         in_currentBullets = in_bulletsPerMag;
         originalPos = transform.localPosition;
+        soundRadius.gameObject.SetActive(false);
 
         UpdateAmmoUI();
     }
@@ -71,6 +75,8 @@ public class OG_3D_Gun : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        soundSphereColl.radius = fl_soundRadius;
+
         if (bl_isReloading)
             return;
 
@@ -98,6 +104,13 @@ public class OG_3D_Gun : MonoBehaviour
 
         ADS();
         UpdateAmmoUI();
+    }
+
+    IEnumerator SoundRadiuTimer()
+    {
+        soundRadius.gameObject.SetActive(true);
+        yield return new WaitForSeconds(1f);
+        soundRadius.gameObject.SetActive(false);
     }
 
     void UpdateAmmoUI()
@@ -138,6 +151,7 @@ public class OG_3D_Gun : MonoBehaviour
     {
         MuzzleFlash.Play();
         mAudioSource.Play();
+        StartCoroutine(SoundRadiuTimer());
         //StartCoroutine(SheelSoundDelay());
 
         Recoil();
@@ -191,16 +205,6 @@ public class OG_3D_Gun : MonoBehaviour
                 GameObject ImpactGO = Instantiate(ImpactEffect[2], hit.point, Quaternion.LookRotation(hit.normal));
                 Destroy(ImpactGO, 2f);
             }
-
-            //if (hit.collider.tag == "HeadShot")
-            //{
-            //    //Instantiate(BulletHole[Random.Range(6, 8)], hit.point, Quaternion.FromToRotation(Vector3.up, hit.normal));
-            //    GameObject ImpactGO = Instantiate(ImpactEffect[2], hit.point, Quaternion.LookRotation(hit.normal));
-            //    Destroy(ImpactGO, 2f);
-            //    fl_damage = 100f;
-            //    Debug.Log("HeadShot");
-            //}
-
         }
 
         anim.CrossFadeInFixedTime("Fire", 0.01f);        
