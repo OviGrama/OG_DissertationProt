@@ -1994,6 +1994,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fl_maxHealth: 100
   fl_currentHealth: 0
+  DeathSounds:
+  - {fileID: 8300000, guid: 66492b65c7956d240a1cc8feca8b14dc, type: 3}
+  - {fileID: 8300000, guid: f5fcfa5141bb1264fa061268d8f9f025, type: 3}
+  - {fileID: 8300000, guid: f97faa6831d67304faf1c6528df78417, type: 3}
   DeathVFX: {fileID: 1836790931872550, guid: ef0bf767d496f7947acc193f4c2bfca9, type: 3}
   dVFXoffSet: {fileID: 492976838}
   healthBar: {fileID: 95038057}
@@ -2003,11 +2007,12 @@ MonoBehaviour:
   waypoints: []
   investigateWait: 0
   fl_heightMultiplier: 0
-  fl_sightDist: 12
+  fl_sightDist: 10
   fl_ShootingStoppingDistance: 0
   fl_ViewOffsetAngle: 3
   in_NumberOFRays: 30
-  fl_shootingDmg: 10
+  in_maxDmg: 10
+  in_minDmg: 3
   fl_fireRate: 0.75
   shootingSound: {fileID: 8300000, guid: fc20dba61f357a34db71a57bbd576e11, type: 3}
 --- !u!135 &234763993
@@ -2368,6 +2373,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fl_maxHealth: 100
   fl_currentHealth: 0
+  DeathSounds:
+  - {fileID: 8300000, guid: 66492b65c7956d240a1cc8feca8b14dc, type: 3}
+  - {fileID: 8300000, guid: f5fcfa5141bb1264fa061268d8f9f025, type: 3}
+  - {fileID: 8300000, guid: f97faa6831d67304faf1c6528df78417, type: 3}
   DeathVFX: {fileID: 1836790931872550, guid: ef0bf767d496f7947acc193f4c2bfca9, type: 3}
   dVFXoffSet: {fileID: 1305357329}
   healthBar: {fileID: 603213495}
@@ -2377,11 +2386,12 @@ MonoBehaviour:
   waypoints: []
   investigateWait: 0
   fl_heightMultiplier: 0
-  fl_sightDist: 12
+  fl_sightDist: 10
   fl_ShootingStoppingDistance: 0
   fl_ViewOffsetAngle: 3
   in_NumberOFRays: 30
-  fl_shootingDmg: 10
+  in_maxDmg: 10
+  in_minDmg: 3
   fl_fireRate: 0.75
   shootingSound: {fileID: 8300000, guid: fc20dba61f357a34db71a57bbd576e11, type: 3}
 --- !u!114 &341550804
@@ -3153,6 +3163,97 @@ Transform:
   m_Father: {fileID: 682218308}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &472811379
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 472811380}
+  - component: {fileID: 472811383}
+  - component: {fileID: 472811382}
+  - component: {fileID: 472811381}
+  m_Layer: 10
+  m_Name: Cube
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &472811380
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 472811379}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.001, y: 0.001, z: 84.15}
+  m_Children: []
+  m_Father: {fileID: 543168028}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &472811381
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 472811379}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!23 &472811382
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 472811379}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 0
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+--- !u!33 &472811383
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 472811379}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!4 &473812419 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1328022616, guid: 05f744f2fdec9c34e8f5879d332626a5,
@@ -4980,6 +5081,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fl_maxHealth: 100
   fl_currentHealth: 0
+  DeathSounds:
+  - {fileID: 8300000, guid: 66492b65c7956d240a1cc8feca8b14dc, type: 3}
+  - {fileID: 8300000, guid: f5fcfa5141bb1264fa061268d8f9f025, type: 3}
+  - {fileID: 8300000, guid: f97faa6831d67304faf1c6528df78417, type: 3}
   DeathVFX: {fileID: 1836790931872550, guid: ef0bf767d496f7947acc193f4c2bfca9, type: 3}
   dVFXoffSet: {fileID: 2020985122}
   healthBar: {fileID: 767349203}
@@ -4989,11 +5094,12 @@ MonoBehaviour:
   waypoints: []
   investigateWait: 0
   fl_heightMultiplier: 0
-  fl_sightDist: 12
+  fl_sightDist: 10
   fl_ShootingStoppingDistance: 0
   fl_ViewOffsetAngle: 3
   in_NumberOFRays: 30
-  fl_shootingDmg: 10
+  in_maxDmg: 10
+  in_minDmg: 3
   fl_fireRate: 0.75
   shootingSound: {fileID: 8300000, guid: fc20dba61f357a34db71a57bbd576e11, type: 3}
 --- !u!135 &823795381
@@ -5311,6 +5417,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fl_maxHealth: 100
   fl_currentHealth: 0
+  DeathSounds: []
   DeathVFX: {fileID: 1836790931872550, guid: ef0bf767d496f7947acc193f4c2bfca9, type: 3}
   dVFXoffSet: {fileID: 768548854}
   healthBar: {fileID: 0}
@@ -5324,7 +5431,8 @@ MonoBehaviour:
   fl_ShootingStoppingDistance: 0
   fl_ViewOffsetAngle: 5
   in_NumberOFRays: 4
-  fl_shootingDmg: 0
+  in_maxDmg: 0
+  in_minDmg: 0
   fl_fireRate: 0
   shootingSound: {fileID: 0}
 --- !u!135 &900573418
@@ -6259,6 +6367,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fl_maxHealth: 100
   fl_currentHealth: 0
+  DeathSounds:
+  - {fileID: 8300000, guid: 66492b65c7956d240a1cc8feca8b14dc, type: 3}
+  - {fileID: 8300000, guid: f5fcfa5141bb1264fa061268d8f9f025, type: 3}
+  - {fileID: 8300000, guid: f97faa6831d67304faf1c6528df78417, type: 3}
   DeathVFX: {fileID: 1836790931872550, guid: ef0bf767d496f7947acc193f4c2bfca9, type: 3}
   dVFXoffSet: {fileID: 341360066}
   healthBar: {fileID: 1014420049}
@@ -6268,11 +6380,12 @@ MonoBehaviour:
   waypoints: []
   investigateWait: 0
   fl_heightMultiplier: 0
-  fl_sightDist: 12
+  fl_sightDist: 10
   fl_ShootingStoppingDistance: 0
   fl_ViewOffsetAngle: 3
   in_NumberOFRays: 30
-  fl_shootingDmg: 10
+  in_maxDmg: 10
+  in_minDmg: 3
   fl_fireRate: 0.75
   shootingSound: {fileID: 8300000, guid: fc20dba61f357a34db71a57bbd576e11, type: 3}
 --- !u!135 &1077819845
@@ -9520,6 +9633,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fl_maxHealth: 100
   fl_currentHealth: 0
+  DeathSounds:
+  - {fileID: 8300000, guid: 66492b65c7956d240a1cc8feca8b14dc, type: 3}
+  - {fileID: 8300000, guid: f5fcfa5141bb1264fa061268d8f9f025, type: 3}
+  - {fileID: 8300000, guid: f97faa6831d67304faf1c6528df78417, type: 3}
   DeathVFX: {fileID: 1836790931872550, guid: ef0bf767d496f7947acc193f4c2bfca9, type: 3}
   dVFXoffSet: {fileID: 711915946}
   healthBar: {fileID: 694329654}
@@ -9529,11 +9646,12 @@ MonoBehaviour:
   waypoints: []
   investigateWait: 0
   fl_heightMultiplier: 0
-  fl_sightDist: 12
+  fl_sightDist: 10
   fl_ShootingStoppingDistance: 0
   fl_ViewOffsetAngle: 3
   in_NumberOFRays: 30
-  fl_shootingDmg: 10
+  in_maxDmg: 10
+  in_minDmg: 3
   fl_fireRate: 0.75
   shootingSound: {fileID: 8300000, guid: fc20dba61f357a34db71a57bbd576e11, type: 3}
 --- !u!135 &1782896983
@@ -11857,6 +11975,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fl_maxHealth: 100
   fl_currentHealth: 0
+  DeathSounds:
+  - {fileID: 8300000, guid: 66492b65c7956d240a1cc8feca8b14dc, type: 3}
+  - {fileID: 8300000, guid: f5fcfa5141bb1264fa061268d8f9f025, type: 3}
+  - {fileID: 8300000, guid: f97faa6831d67304faf1c6528df78417, type: 3}
   DeathVFX: {fileID: 1836790931872550, guid: ef0bf767d496f7947acc193f4c2bfca9, type: 3}
   dVFXoffSet: {fileID: 1658608186}
   healthBar: {fileID: 2053326083}
@@ -11866,11 +11988,12 @@ MonoBehaviour:
   waypoints: []
   investigateWait: 0
   fl_heightMultiplier: 0
-  fl_sightDist: 12
+  fl_sightDist: 10
   fl_ShootingStoppingDistance: 0
   fl_ViewOffsetAngle: 3
   in_NumberOFRays: 30
-  fl_shootingDmg: 10
+  in_maxDmg: 10
+  in_minDmg: 3
   fl_fireRate: 0.75
   shootingSound: {fileID: 8300000, guid: fc20dba61f357a34db71a57bbd576e11, type: 3}
 --- !u!135 &2130929958
@@ -12160,12 +12283,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 364889b1b567db7489fab4fe42222eb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  in_minDMG: 5
-  in_maxDMG: 10
+  in_minDMG: 7
+  in_maxDMG: 15
   fl_range: 100
   fl_fireRate: 10
   fl_impactForce: 0
-  fl_soundRadius: 30
+  fl_soundRadius: 15
   soundSphereColl: {fileID: 663452915}
   spread: 0.5
   recoil: 0

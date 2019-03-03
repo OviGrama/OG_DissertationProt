@@ -8,6 +8,7 @@ public class OG_EnemyAi : MonoBehaviour
 {
     public float fl_maxHealth = 100;
     public float fl_currentHealth;
+    public AudioClip[] DeathSounds;
     public GameObject DeathVFX;
     public Transform dVFXoffSet;
 
@@ -22,6 +23,7 @@ public class OG_EnemyAi : MonoBehaviour
         PATROL,
         ATTACK,
         SOUNDAWARE,
+        CHASE
     }
 
     public State state;
@@ -50,7 +52,8 @@ public class OG_EnemyAi : MonoBehaviour
     [Range(4, 50)]public int in_NumberOFRays = 4;
     private GameObject tDetected = null;
     private OG_PlayerHealth pcHealthRef;
-    public float fl_shootingDmg;
+    public int in_maxDmg;
+    public int in_minDmg;
     private float fl_nextTimeToFire;
     public float fl_fireRate;
     public AudioClip shootingSound;
@@ -68,13 +71,14 @@ public class OG_EnemyAi : MonoBehaviour
         waypoints = GameObject.FindGameObjectsWithTag("Waypoint");
         waypointInd = Random.Range(0, waypoints.Length);
 
-        state = State.PATROL;
+        //state = State.PATROL;
 
         bl_alive = true;
 
         fl_heightMultiplier = 1.1f;
 
-        StartCoroutine("FSM");
+        StartCoroutine(FSM());
+
 
         sphCol.radius = fl_sightDist;
 
@@ -85,7 +89,8 @@ public class OG_EnemyAi : MonoBehaviour
     private void FixedUpdate()
     {
         SwitchState();
-
+        //StartCoroutine(SwitchState());
+        RaycastFieldOfView();
         fl_ShootingStoppingDistance = fl_sightDist;
         sphCol.radius = fl_sightDist + 2;
         healthBar.value = CalculateHealth();
@@ -95,107 +100,6 @@ public class OG_EnemyAi : MonoBehaviour
     {
         return fl_currentHealth / fl_maxHealth;
     }
-
-
-
-    // Add a timer for this coroutine.
-    IEnumerator FSM()
-    {
-        while (bl_alive)
-        {
-            switch (state)
-            {
-                case State.PATROL:
-                    print("Patrol");
-                    Patrol();
-                    break;
-
-                case State.ATTACK:
-                    print("Attack");
-                    Attack();
-                    break;
-
-                case State.SOUNDAWARE:
-                    print("Investigate");
-                    SoundAware();
-                    break;
-            }
-
-            yield return null;
-        }
-    }
-
-    void Patrol()
-    {
-        NavAgent.stoppingDistance = fl_patrollingStoppingDistance;
-
-        if (Vector3.Distance(this.transform.position, waypoints[waypointInd].transform.position) >= 2)
-        {
-            NavAgent.SetDestination(waypoints[waypointInd].transform.position);
-            NavAgent.updatePosition = true;
-            anim.SetBool("bl_Run", true);
-            anim.SetBool("bl_Shoot", false);
-        }
-
-        else if (Vector3.Distance(this.transform.position, waypoints[waypointInd].transform.position) <= 2)
-        {
-            waypointInd = Random.Range(0, waypoints.Length);
-        }
-
-        else
-        {
-            NavAgent.updatePosition = false;
-        }
-    }
-
-    void Attack()
-    {
-        NavAgent.stoppingDistance = fl_ShootingStoppingDistance;
-        NavAgent.SetDestination(Target.transform.position);
-        anim.SetBool("bl_Run", false);
-        anim.SetBool("bl_Shoot", true);
-        if(Time.time >= fl_nextTimeToFire && !pcHealthRef.bl_playerDead)
-        {
-            fl_nextTimeToFire = Time.time + 1f / fl_fireRate;
-            DamageThePlayer();
-        }
-    }
-
-    void DamageThePlayer()
-    {
-        AudioSource.PlayClipAtPoint(shootingSound, transform.position);
-        pcHealthRef.TakeDamage(fl_shootingDmg);
-    }
-
-    void SoundAware()
-    {
-        NavAgent.SetDestination(Target.transform.position);
-        NavAgent.updatePosition = true;
-        anim.SetBool("bl_Run", true);
-        anim.SetBool("bl_Shoot", false);
-    }
-
-    private void OnTriggerEnter(Collider coll)
-    {
-        if (coll.gameObject.tag == "SoundRadius")
-        {
-            sDetected = coll.gameObject;
-            print(sDetected.name);
-            FacePlayer();
-        }
-    }
-
-    //private void OnTriggerExit(Collider coll)
-    //{
-    //    if(coll.tag == "SoundAware")
-    //    {
-    //        state = State.PATROL;
-    //        FacePlayer();
-    //    }
-    //}
-
-
-    
 
     void RaycastFieldOfView()
     {
@@ -262,15 +166,49 @@ public class OG_EnemyAi : MonoBehaviour
         }
     }
 
+
+    // Add a timer for this coroutine.
+    IEnumerator FSM()
+    {
+        while (bl_alive)
+        {
+            switch (state)
+            {
+                case State.PATROL:
+                    print("Patrol");
+                    Patrol();
+                    break;
+
+                case State.ATTACK:
+                    print("Attack");
+                    Attack();
+                    break;
+
+                case State.SOUNDAWARE:
+                    print("Soundaware");
+                    SoundAware();
+                    break;
+
+                case State.CHASE:
+                    print("Chasing");
+                    ChasePlayer();
+                    break;
+            }
+
+            yield return null;
+            //yield return new WaitForSeconds(.1f);
+        }
+    }
+
     // Make this a couroutine, make it happen 10 a second.
     void SwitchState()
     {
-        RaycastFieldOfView();
+        //RaycastFieldOfView();
 
-        if (tDetected == null)
-        {
-            state = State.PATROL;
-        }
+        //if (tDetected == null)
+        //{
+        //    state = State.PATROL;
+        //}
 
         // If the NPC detects the player
         if (tDetected != null) 
@@ -295,16 +233,104 @@ public class OG_EnemyAi : MonoBehaviour
             }
         }
 
-        if(state == State.PATROL && sDetected != null && tDetected == null)
+        //if (state == State.SOUNDAWARE)
+        //{
+        //    if(tDetected != null)
+        //    {
+        //        if(tDetected.tag == "Player")
+        //        {
+        //            state = State.ATTACK;
+        //        }
+        //    }
+        //}
+
+        //yield return new WaitForSeconds(.01f);
+        //yield return null;
+    }
+
+    void Patrol()
+    {
+        NavAgent.stoppingDistance = fl_patrollingStoppingDistance;
+
+        if (Vector3.Distance(this.transform.position, waypoints[waypointInd].transform.position) >= 2)
         {
-            if(sDetected.tag == "SoundAware")
-            {
-                Debug.Log("The detected tag is" + sDetected.tag);
-                state = State.SOUNDAWARE;
-            }
-            
+            NavAgent.SetDestination(waypoints[waypointInd].transform.position);
+            NavAgent.updatePosition = true;
+            anim.SetBool("bl_Run", true);
+            anim.SetBool("bl_Shoot", false);
+        }
+
+        else if (Vector3.Distance(this.transform.position, waypoints[waypointInd].transform.position) <= 2)
+        {
+            waypointInd = Random.Range(0, waypoints.Length);
+        }
+
+        else
+        {
+            NavAgent.updatePosition = false;
         }
     }
+
+    void Attack()
+    {
+        NavAgent.stoppingDistance = fl_ShootingStoppingDistance;
+        NavAgent.SetDestination(Target.transform.position);
+        anim.SetBool("bl_Run", false);
+        anim.SetBool("bl_Shoot", true);
+        if(Time.time >= fl_nextTimeToFire && !pcHealthRef.bl_playerDead)
+        {
+            fl_nextTimeToFire = Time.time + 1f / fl_fireRate;
+            DamageThePlayer();
+        }
+    }
+
+    void SoundAware()
+    {
+        //Target = GameObject.Find("Player");
+        NavAgent.stoppingDistance = fl_ShootingStoppingDistance;
+        NavAgent.SetDestination(Target.transform.position);
+        NavAgent.updatePosition = true;
+        anim.SetBool("bl_Run", true);
+        anim.SetBool("bl_Shoot", false);
+    }
+
+    void ChasePlayer()
+    {
+
+    }
+
+    void DamageThePlayer()
+    {
+        int damageOutput = Random.Range(in_minDmg, in_maxDmg);
+        AudioSource.PlayClipAtPoint(shootingSound, transform.position);
+        pcHealthRef.TakeDamage(damageOutput);
+    }
+
+
+    private void OnTriggerEnter(Collider coll)
+    {
+        if (coll.gameObject.tag == "SoundRadius")
+        {
+            //Target = sDetected;
+            //print(sDetected.name);
+            state = State.SOUNDAWARE;
+            FacePlayer();
+        }
+    }
+
+    //private void OnTriggerExit(Collider coll)
+    //{
+    //    if (coll.tag == "SoundAware")
+    //    {
+    //        state = State.SOUNDAWARE;
+    //        FacePlayer();
+    //    }
+    //}
+
+
+
+
+
 
     private void FacePlayer()
     {
@@ -325,7 +351,8 @@ public class OG_EnemyAi : MonoBehaviour
     }
 
     public void Death()
-    {
+    { 
+        AudioSource.PlayClipAtPoint(DeathSounds[Random.Range(0, DeathSounds.Length)], transform.position);
         GameObject deathParticle = Instantiate(DeathVFX, dVFXoffSet.transform.position, transform.rotation);
         bl_alive = false;
         Destroy(gameObject);
