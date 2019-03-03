@@ -12,6 +12,9 @@ TagManager:
   - Waypoint
   - HeadShot
   - SoundRadius
+  - Wood
+  - Glass
+  - Metal
   layers:
   - Default
   - TransparentFX

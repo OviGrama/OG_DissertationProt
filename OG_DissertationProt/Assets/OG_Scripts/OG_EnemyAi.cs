@@ -316,7 +316,14 @@ public class OG_EnemyAi : MonoBehaviour
             state = State.SOUNDAWARE;
             FacePlayer();
         }
+
+        if (coll.gameObject.tag == "Player")
+        {
+            state = State.ATTACK;
+        }
     }
+
+
 
     //private void OnTriggerExit(Collider coll)
     //{

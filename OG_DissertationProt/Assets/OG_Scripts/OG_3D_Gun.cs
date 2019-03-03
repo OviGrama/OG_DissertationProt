@@ -30,6 +30,7 @@ public class OG_3D_Gun : MonoBehaviour
     public int in_currentBullets;
     public float fl_reloadTime = 1f;
     private bool bl_isReloading = false;
+    public AudioSource reloadingSound;
 
     [Header("Weapon Req Components")]
     public Camera fpsCam;
@@ -126,7 +127,7 @@ public class OG_3D_Gun : MonoBehaviour
 
     private void ADS()
     {
-        if (Input.GetButton("Fire2") && !bl_isReloading)
+        if (Input.GetButton("Fire2") )//&& !bl_isReloading)
         {
             transform.localPosition = Vector3.Lerp(transform.localPosition, aimPos, Time.deltaTime * fl_ADSSpeed);
             bl_isAiming = true;
@@ -160,9 +161,9 @@ public class OG_3D_Gun : MonoBehaviour
         int layerMask = 1 << 10;
 
         layerMask = ~layerMask; // Collides with everything apart from layer 10.
-        
 
-        if(Physics.Raycast(fpsCam.transform.position, CalculateSpread(spread, shootPoint), out hit, fl_range, layerMask))
+
+        if (Physics.Raycast(fpsCam.transform.position, CalculateSpread(spread, shootPoint), out hit, fl_range, layerMask))
         {
             //float fl_fractionalDistance = (fl_scaledDmgComp - Vector3.Distance(transform.position, hit.transform.position)) / fl_scaledDmgComp;
             //Debug.Log("Fractional distance is " + fl_fractionalDistance);
@@ -174,7 +175,7 @@ public class OG_3D_Gun : MonoBehaviour
             Debug.Log("LayerMask: " + hit.transform.gameObject.layer + ", Name: " + hit.transform.name);
 
             OG_EnemyAi enemyScRef = hit.transform.GetComponent<OG_EnemyAi>();
-            if(enemyScRef != null)
+            if (enemyScRef != null)
             {
                 enemyScRef.TakeDamage(int_randomDamage);
             }
@@ -184,11 +185,13 @@ public class OG_3D_Gun : MonoBehaviour
                 hit.rigidbody.AddForce(-hit.normal * fl_impactForce);
             }
 
-            if(hit.collider.tag == "Wall")
+
+            if (hit.collider.tag == "Metal")
             {
-                GameObject HoleGO = Instantiate(BulletHole[Random.Range(0,2)], hit.point, Quaternion.FromToRotation(Vector3.up, hit.normal));
+                Instantiate(BulletHole[Random.Range(0, 2)], hit.point, Quaternion.FromToRotation(Vector3.up, hit.normal));
                 GameObject ImpactGO = Instantiate(ImpactEffect[0], hit.point, Quaternion.LookRotation(hit.normal));
                 Destroy(ImpactGO, 2f);
+
             }
 
             if (hit.collider.tag == "Ground")
@@ -205,14 +208,35 @@ public class OG_3D_Gun : MonoBehaviour
                 GameObject ImpactGO = Instantiate(ImpactEffect[2], hit.point, Quaternion.LookRotation(hit.normal));
                 Destroy(ImpactGO, 2f);
             }
+
+            if (hit.collider.tag == "Wall")
+            {
+                GameObject HoleGO = Instantiate(BulletHole[Random.Range(0, 2)], hit.point, Quaternion.FromToRotation(Vector3.up, hit.normal));
+                GameObject ImpactGO = Instantiate(ImpactEffect[3], hit.point, Quaternion.LookRotation(hit.normal));
+                Destroy(ImpactGO, 2f);
+            }
+
+            if (hit.collider.tag == "Wood")
+            {
+                GameObject HoleGO = Instantiate(BulletHole[Random.Range(0, 2)], hit.point, Quaternion.FromToRotation(Vector3.up, hit.normal));
+                GameObject ImpactGO = Instantiate(ImpactEffect[4], hit.point, Quaternion.LookRotation(hit.normal));
+                Destroy(ImpactGO, 2f);
+            }
+
+            if (hit.collider.tag == "Glass")
+            {
+                GameObject HoleGO = Instantiate(BulletHole[Random.Range(0, 2)], hit.point, Quaternion.FromToRotation(Vector3.up, hit.normal));
+                GameObject ImpactGO = Instantiate(ImpactEffect[5], hit.point, Quaternion.LookRotation(hit.normal));
+                Destroy(ImpactGO, 2f);
+            }
+
+            anim.CrossFadeInFixedTime("Fire", 0.01f);
+
+            in_currentBullets--;
+            UpdateAmmoUI();
+            //Debug.Log(in_currentBullets + " bullets left in clip!");
+
         }
-
-        anim.CrossFadeInFixedTime("Fire", 0.01f);        
-
-        in_currentBullets--;
-        UpdateAmmoUI();
-        //Debug.Log(in_currentBullets + " bullets left in clip!");
-        
     }
 
     IEnumerator SheelSoundDelay()
@@ -224,6 +248,7 @@ public class OG_3D_Gun : MonoBehaviour
 
     IEnumerator Reload()
     {
+        reloadingSound.Play();
         bl_isReloading = true;
         anim.SetBool("Reloading", true);
         yield return new WaitForSeconds(fl_reloadTime - .25f);
