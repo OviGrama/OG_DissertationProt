@@ -30,7 +30,7 @@ public class OG_EnemyAi : MonoBehaviour
     public bool bl_alive;
 
     // Patrolling Var
-    public float fl_patrollingStoppingDistance = 3f;
+    public float fl_patrollingStoppingDistance;
     public GameObject[] waypoints;
     private int waypointInd;
 
