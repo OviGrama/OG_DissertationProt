@@ -6,17 +6,43 @@ using UnityEngine.UI;
 
 public class OG_EnemyAi : MonoBehaviour
 {
+    [Header("Health")]
     public float fl_maxHealth = 100;
     public float fl_currentHealth;
+
+    [Header("Necesarry Prefabs")]
     public AudioClip[] DeathSounds;
     public GameObject DeathVFX;
     public Transform dVFXoffSet;
-
     public Slider healthBar;
+
 
     GameObject Target;
     NavMeshAgent NavAgent;
     Animator anim;
+    OG_GameManager gameManager;
+
+    [Header("Shooting Properties")]
+    //Shooting Var
+    public int in_maxDmg;
+    public int in_minDmg;
+    public float fl_fireRate;
+    public float fl_heightMultiplier;
+    private float fl_nextTimeToFire;
+    public float fl_ShootingStoppingDistance;
+    public float fl_sightDist;
+    [Range(1f, 15f)] public float fl_ViewOffsetAngle = 4f;
+    [Range(4, 50)]public int in_NumberOFRays = 4;
+    public AudioClip shootingSound;
+    private GameObject tDetected = null;
+    private OG_PlayerHealth pcHealthRef;
+    private SphereCollider sphCol;
+
+    [Header("Patrolling Properties")]
+    // Patrolling Var
+    public float fl_patrollingStoppingDistance;
+    public GameObject[] waypoints;
+    private int waypointInd;
 
     public enum State
     {
@@ -26,37 +52,11 @@ public class OG_EnemyAi : MonoBehaviour
         CHASE
     }
 
+    [Header("States")]
     public State state;
     public bool bl_alive;
 
-    // Patrolling Var
-    public float fl_patrollingStoppingDistance;
-    public GameObject[] waypoints;
-    private int waypointInd;
 
-    // Investigating Var
-    private Vector3 investigateSpot;
-    private float fl_timer = 0;
-    public float investigateWait = 1;
-
-    // Sound aware Var
-    private GameObject sDetected = null;
-
-    //Shooting Var
-
-    public float fl_heightMultiplier;
-    public float fl_sightDist;
-    public float fl_ShootingStoppingDistance;
-    private SphereCollider sphCol;
-    [Range(1f, 15f)] public float fl_ViewOffsetAngle = 4f;
-    [Range(4, 50)]public int in_NumberOFRays = 4;
-    private GameObject tDetected = null;
-    private OG_PlayerHealth pcHealthRef;
-    public int in_maxDmg;
-    public int in_minDmg;
-    private float fl_nextTimeToFire;
-    public float fl_fireRate;
-    public AudioClip shootingSound;
 
 
 
@@ -67,6 +67,7 @@ public class OG_EnemyAi : MonoBehaviour
         anim = GetComponent<Animator>();
         sphCol = GetComponent<SphereCollider>();
         pcHealthRef = GameObject.Find("Player").GetComponent<OG_PlayerHealth>();
+        gameManager = GameObject.Find("GameManager").GetComponent<OG_GameManager>();
 
         waypoints = GameObject.FindGameObjectsWithTag("Waypoint");
         waypointInd = Random.Range(0, waypoints.Length);
@@ -188,27 +189,15 @@ public class OG_EnemyAi : MonoBehaviour
                     print("Soundaware");
                     SoundAware();
                     break;
-
-                case State.CHASE:
-                    print("Chasing");
-                    ChasePlayer();
-                    break;
             }
 
             yield return null;
-            //yield return new WaitForSeconds(.1f);
         }
     }
 
     // Make this a couroutine, make it happen 10 a second.
     void SwitchState()
     {
-        //RaycastFieldOfView();
-
-        //if (tDetected == null)
-        //{
-        //    state = State.PATROL;
-        //}
 
         // If the NPC detects the player
         if (tDetected != null) 
@@ -232,20 +221,6 @@ public class OG_EnemyAi : MonoBehaviour
                 state = State.PATROL;
             }
         }
-
-        //if (state == State.SOUNDAWARE)
-        //{
-        //    if(tDetected != null)
-        //    {
-        //        if(tDetected.tag == "Player")
-        //        {
-        //            state = State.ATTACK;
-        //        }
-        //    }
-        //}
-
-        //yield return new WaitForSeconds(.01f);
-        //yield return null;
     }
 
     void Patrol()
@@ -294,13 +269,9 @@ public class OG_EnemyAi : MonoBehaviour
         anim.SetBool("bl_Shoot", false);
     }
 
-    void ChasePlayer()
-    {
-
-    }
-
     void DamageThePlayer()
     {
+        gameManager.fl_difficulty -= 0.5f;
         int damageOutput = Random.Range(in_minDmg, in_maxDmg);
         AudioSource.PlayClipAtPoint(shootingSound, transform.position);
         pcHealthRef.TakeDamage(damageOutput);
@@ -317,10 +288,10 @@ public class OG_EnemyAi : MonoBehaviour
             FacePlayer();
         }
 
-        if (coll.gameObject.tag == "Player")
-        {
-            state = State.ATTACK;
-        }
+        //if (coll.gameObject.tag == "Player")
+        //{
+        //    state = State.SOUNDAWARE;
+        //}
     }
 
 
@@ -350,6 +321,7 @@ public class OG_EnemyAi : MonoBehaviour
     public void TakeDamage(int amount)
     {
         fl_currentHealth -= amount;
+        gameManager.fl_difficulty += 0.5f;
 
         if (fl_currentHealth <= 0f)
         {
@@ -358,7 +330,8 @@ public class OG_EnemyAi : MonoBehaviour
     }
 
     public void Death()
-    { 
+    {
+        gameManager.fl_difficulty += 1f;
         AudioSource.PlayClipAtPoint(DeathSounds[Random.Range(0, DeathSounds.Length)], transform.position);
         GameObject deathParticle = Instantiate(DeathVFX, dVFXoffSet.transform.position, transform.rotation);
         bl_alive = false;
