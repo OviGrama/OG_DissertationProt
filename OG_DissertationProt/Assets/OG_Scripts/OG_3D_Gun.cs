@@ -56,6 +56,7 @@ public class OG_3D_Gun : MonoBehaviour
     private Vector3 originalPos;
     private OG_WeaponSway weaponSwRef;
     private OG_EnemyAi enemyAiRef;
+    private OG_PlayerHealth playerHealth;
 
     
 
@@ -64,6 +65,7 @@ public class OG_3D_Gun : MonoBehaviour
     {
         FpsController = GameObject.Find("Player").GetComponent<FirstPersonController>();
         weaponSwRef = GameObject.Find("Weapon Holder").GetComponent<OG_WeaponSway>();
+        playerHealth = GameObject.Find("Player").GetComponent<OG_PlayerHealth>();
         mAudioSource = GetComponent<AudioSource>();
         AmmoTxt = GameObject.Find("AmmoText").GetComponent<Text>();
         in_currentBullets = in_bulletsPerMag;
@@ -88,7 +90,7 @@ public class OG_3D_Gun : MonoBehaviour
         }
 
 
-        if (Input.GetButton("Fire1") && Time.time >= fl_nextTimetoFire)
+        if (Input.GetButton("Fire1") && Time.time >= fl_nextTimetoFire && !playerHealth.bl_playerDead)
         {
             fl_nextTimetoFire = Time.time + 1f / fl_fireRate;
             Shoot();
