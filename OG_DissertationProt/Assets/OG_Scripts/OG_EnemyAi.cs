@@ -271,7 +271,7 @@ public class OG_EnemyAi : MonoBehaviour
 
     void DamageThePlayer()
     {
-        gameManager.fl_difficulty -= 0.5f;
+        gameManager.fl_difficulty -= 0.25f;
         int damageOutput = Random.Range(in_minDmg, in_maxDmg);
         AudioSource.PlayClipAtPoint(shootingSound, transform.position);
         pcHealthRef.TakeDamage(damageOutput);
@@ -282,28 +282,10 @@ public class OG_EnemyAi : MonoBehaviour
     {
         if (coll.gameObject.tag == "SoundRadius")
         {
-            //Target = sDetected;
-            //print(sDetected.name);
             state = State.SOUNDAWARE;
             FacePlayer();
         }
-
-        //if (coll.gameObject.tag == "Player")
-        //{
-        //    state = State.SOUNDAWARE;
-        //}
     }
-
-
-
-    //private void OnTriggerExit(Collider coll)
-    //{
-    //    if (coll.tag == "SoundAware")
-    //    {
-    //        state = State.SOUNDAWARE;
-    //        FacePlayer();
-    //    }
-    //}
 
 
 
@@ -320,22 +302,33 @@ public class OG_EnemyAi : MonoBehaviour
 
     public void TakeDamage(int amount)
     {
+        gameManager.fl_difficulty += 0.25f;
         fl_currentHealth -= amount;
-        gameManager.fl_difficulty += 0.5f;
 
         if (fl_currentHealth <= 0f)
         {
             Death();
         }
+
+        //if (gameManager.bl_DDA)
+        //{
+        //    gameManager.fl_difficulty += 0.25f;
+        //}
+
     }
 
     public void Death()
     {
-        gameManager.fl_difficulty += 1f;
+        gameManager.fl_difficulty += 0.75f;
         AudioSource.PlayClipAtPoint(DeathSounds[Random.Range(0, DeathSounds.Length)], transform.position);
         GameObject deathParticle = Instantiate(DeathVFX, dVFXoffSet.transform.position, transform.rotation);
         bl_alive = false;
         Destroy(gameObject);
         Destroy(deathParticle, 3);
+
+        //if (gameManager.bl_DDA)
+        //{
+        //    gameManager.fl_difficulty += 0.75f;
+        //}
     }
 }

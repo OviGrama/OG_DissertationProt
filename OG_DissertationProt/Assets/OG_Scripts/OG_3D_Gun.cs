@@ -134,14 +134,16 @@ public class OG_3D_Gun : MonoBehaviour
             transform.localPosition = Vector3.Lerp(transform.localPosition, aimPos, Time.deltaTime * fl_ADSSpeed);
             bl_isAiming = true;
             weaponSwRef.fl_swayAmount = 0f;
-            recoil = 0.3f;
+            recoil = 0.5f;
+            spread = .5f;
         }
         else
         {
             transform.localPosition = Vector3.Lerp(transform.localPosition, originalPos, Time.deltaTime * fl_ADSSpeed);
             bl_isAiming = false;
             weaponSwRef.fl_swayAmount = 0.1f;
-            recoil = 0.5f;
+            recoil = 1f;
+            spread = .8f;
         }
     }
 
@@ -155,7 +157,6 @@ public class OG_3D_Gun : MonoBehaviour
         MuzzleFlash.Play();
         mAudioSource.Play();
         StartCoroutine(SoundRadiuTimer());
-        //StartCoroutine(SheelSoundDelay());
 
         Recoil();
 

@@ -7,7 +7,8 @@ public class OG_PickUp : MonoBehaviour
     public enum PickUpType
     {
         Ammo,
-        Health
+        Health,
+        Live
     }
 
     public PickUpType pickUpType;
@@ -20,6 +21,7 @@ public class OG_PickUp : MonoBehaviour
 
     public AudioClip ammoPickUp;
     public AudioClip healthPickUp;
+    public AudioClip livesPickUp;
 
     // Start is called before the first frame update
     void Start()
@@ -55,6 +57,13 @@ public class OG_PickUp : MonoBehaviour
                     healthRef.fl_currnetPcHealth += in_healthAmount;
                     Destroy(gameObject);
                 }
+            }
+
+            if(pickUpType == PickUpType.Live)
+            {
+                AudioSource.PlayClipAtPoint(livesPickUp, transform.position);
+                healthRef.in_pcLives++;
+                Destroy(gameObject);
             }
         }
     }
