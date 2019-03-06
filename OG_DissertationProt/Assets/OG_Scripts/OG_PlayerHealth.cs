@@ -25,12 +25,13 @@ public class OG_PlayerHealth : MonoBehaviour
     public AudioClip deathClip;
     public AudioClip painClip;
 
-    //private Animator anim;
 
     private FirstPersonController playerController;
     private MouseLook mouseLookRef;
     private float fl_resetTimer;
     public bool bl_playerDead;
+
+    private OG_GameManager gameManager;
 
 
     private void Awake()
@@ -41,6 +42,7 @@ public class OG_PlayerHealth : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
 
         playerController = GameObject.Find("Player").GetComponent<FirstPersonController>();
+        gameManager = GameObject.Find("GameManager").GetComponent<OG_GameManager>();
         fl_maxHealth = 100;
         fl_currnetPcHealth = fl_maxHealth;
         in_pcMaxLives = 0;
@@ -119,6 +121,7 @@ public class OG_PlayerHealth : MonoBehaviour
             playerController.enabled = true;
             bl_playerDead = false;
             fl_currnetPcHealth = fl_maxHealth;
+            gameManager.fl_difficulty -= 0.75f;
             in_pcLives--;
         }
     }
