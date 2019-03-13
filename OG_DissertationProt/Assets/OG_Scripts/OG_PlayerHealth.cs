@@ -42,7 +42,7 @@ public class OG_PlayerHealth : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
 
         playerController = GameObject.Find("Player").GetComponent<FirstPersonController>();
-        gameManager = GameObject.Find("GameManager").GetComponent<OG_GameManager>();
+        gameManager = GameObject.Find("_GameManager").GetComponent<OG_GameManager>();
         fl_maxHealth = 100;
         fl_currnetPcHealth = fl_maxHealth;
         in_pcMaxLives = 0;

@@ -135,7 +135,7 @@ public class OG_3D_Gun : MonoBehaviour
             bl_isAiming = true;
             weaponSwRef.fl_swayAmount = 0f;
             recoil = 0.5f;
-            spread = .5f;
+            spread = .3f;
         }
         else
         {
@@ -143,7 +143,7 @@ public class OG_3D_Gun : MonoBehaviour
             bl_isAiming = false;
             weaponSwRef.fl_swayAmount = 0.1f;
             recoil = 1f;
-            spread = .8f;
+            spread = .6f;
         }
     }
 

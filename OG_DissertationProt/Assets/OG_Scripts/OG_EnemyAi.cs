@@ -67,9 +67,9 @@ public class OG_EnemyAi : MonoBehaviour
         anim = GetComponent<Animator>();
         sphCol = GetComponent<SphereCollider>();
         pcHealthRef = GameObject.Find("Player").GetComponent<OG_PlayerHealth>();
-        gameManager = GameObject.Find("GameManager").GetComponent<OG_GameManager>();
+        gameManager = GameObject.Find("_GameManager").GetComponent<OG_GameManager>();
 
-        waypoints = GameObject.FindGameObjectsWithTag("Waypoint");
+        //waypoints = GameObject.FindGameObjectsWithTag("Waypoint");
         waypointInd = Random.Range(0, waypoints.Length);
 
         //state = State.PATROL;
