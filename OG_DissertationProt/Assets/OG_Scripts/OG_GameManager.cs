@@ -14,10 +14,15 @@ public class OG_GameManager : MonoBehaviour
     public string st_DifficultyName;
     public float fl_difficulty;
     public float fl_minDifficultyFloat = 0f;
+    public float fl_maxDifficultyFloat = 30f;
+
+    public GameObject[] MediumItemsToDesable;
+    public GameObject[] HardItemsToDesable;
 
     public GameObject PauseGamePanel;
     FirstPersonController firstPersonController;
     OG_3D_Gun gunRef;
+    OG_EnemyAi enemyAI;
 
     public bool bl_DDA;
     public bool bl_EASY;
@@ -39,11 +44,14 @@ public class OG_GameManager : MonoBehaviour
         firstPersonController = GameObject.Find("Player").GetComponent<FirstPersonController>();
         GameObject player = GameObject.Find("Player");
         gunRef = player.GetComponentInChildren<OG_3D_Gun>();
+        enemyAI = GameObject.FindGameObjectWithTag("Enemy").GetComponent<OG_EnemyAi>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        DifficultyProps();
+
         if (Input.GetKey(KeyCode.Escape))
         {
             PauseGamePanel.gameObject.SetActive(true);
@@ -57,6 +65,11 @@ public class OG_GameManager : MonoBehaviour
         if (fl_difficulty <= 0)
         {
             fl_difficulty = fl_minDifficultyFloat;
+        }
+
+        if(fl_difficulty >= 30)
+        {
+            fl_difficulty = fl_maxDifficultyFloat;
         }
 
 
@@ -75,6 +88,28 @@ public class OG_GameManager : MonoBehaviour
             txt_DifficultyFloat.gameObject.SetActive(false);
             txt_DifficultyState.gameObject.SetActive(false);
             return;
+        }
+
+        if (bl_EASY)
+        {
+            difficulty = Difficulty.EASY;
+            bl_MEDIUM = false;
+            bl_HARD = false;
+            bl_DDA = false;
+        }
+        if (bl_MEDIUM)
+        {
+            difficulty = Difficulty.MEDIUM;
+            bl_EASY = false;
+            bl_HARD = false;
+            bl_DDA = false;
+        }
+        if (bl_HARD)
+        {
+            difficulty = Difficulty.HARD;
+            bl_EASY = false;
+            bl_MEDIUM = false;
+            bl_DDA = false;
         }
     }
 
@@ -137,6 +172,25 @@ public class OG_GameManager : MonoBehaviour
             }
         }
 
+    }
+
+    void DifficultyProps()
+    {
+        if(difficulty == Difficulty.MEDIUM)
+        {
+            for (int i = 0; i < MediumItemsToDesable.Length; i++)
+            {               
+                MediumItemsToDesable[i].SetActive(false);
+            }
+        }
+
+        if (difficulty == Difficulty.HARD)
+        {
+            for (int i = 0; i < HardItemsToDesable.Length; i++)
+            {
+                HardItemsToDesable[i].SetActive(false);
+            }
+        }
     }
 
 
