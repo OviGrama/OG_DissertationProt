@@ -18,7 +18,9 @@ public class OG_EnemyAi : MonoBehaviour
 
 
     GameObject Target;
-    NavMeshAgent NavAgent;
+    [HideInInspector]
+    public NavMeshAgent NavAgent;
+
     Animator anim;
     OG_GameManager gameManager;
 
@@ -92,7 +94,7 @@ public class OG_EnemyAi : MonoBehaviour
         SwitchState();
         //StartCoroutine(SwitchState());
         RaycastFieldOfView();
-        fl_ShootingStoppingDistance = fl_sightDist;
+        fl_ShootingStoppingDistance = fl_sightDist - 1;
         sphCol.radius = fl_sightDist + 2;
         healthBar.value = CalculateHealth();
     }
@@ -271,7 +273,7 @@ public class OG_EnemyAi : MonoBehaviour
 
     void DamageThePlayer()
     {
-        gameManager.fl_difficulty -= 0.25f;
+        gameManager.fl_difficulty -= 1f;
         int damageOutput = Random.Range(in_minDmg, in_maxDmg);
         AudioSource.PlayClipAtPoint(shootingSound, transform.position);
         pcHealthRef.TakeDamage(damageOutput);
@@ -309,26 +311,15 @@ public class OG_EnemyAi : MonoBehaviour
         {
             Death();
         }
-
-        //if (gameManager.bl_DDA)
-        //{
-        //    gameManager.fl_difficulty += 0.25f;
-        //}
-
     }
 
     public void Death()
     {
-        gameManager.fl_difficulty += 0.75f;
+        gameManager.fl_difficulty += 0.5f;
         AudioSource.PlayClipAtPoint(DeathSounds[Random.Range(0, DeathSounds.Length)], transform.position);
         GameObject deathParticle = Instantiate(DeathVFX, dVFXoffSet.transform.position, transform.rotation);
         bl_alive = false;
         Destroy(gameObject);
         Destroy(deathParticle, 3);
-
-        //if (gameManager.bl_DDA)
-        //{
-        //    gameManager.fl_difficulty += 0.75f;
-        //}
     }
 }

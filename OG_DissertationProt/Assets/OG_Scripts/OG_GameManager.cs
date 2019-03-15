@@ -17,6 +17,8 @@ public class OG_GameManager : MonoBehaviour
     public float fl_maxDifficultyFloat = 30f;
 
     public GameObject[] MediumItemsToDesable;
+    public GameObject[] MediumItemsToEnable;
+    public GameObject[] HardItemsToEnable;
     public GameObject[] HardItemsToDesable;
 
     public GameObject PauseGamePanel;
@@ -89,6 +91,21 @@ public class OG_GameManager : MonoBehaviour
             txt_DifficultyState.gameObject.SetActive(false);
             return;
         }
+    }
+
+    public void ResumeGame()
+    {
+        PauseGamePanel.gameObject.SetActive(false);
+        Time.timeScale = 1;
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        firstPersonController.enabled = true;
+        gunRef.enabled = true;
+    }
+
+    void StaticDifficulty()
+    {
+        txt_StaticDifficultyState.text = st_StaticDifficultyName;
 
         if (bl_EASY)
         {
@@ -111,23 +128,8 @@ public class OG_GameManager : MonoBehaviour
             bl_MEDIUM = false;
             bl_DDA = false;
         }
-    }
 
-    public void ResumeGame()
-    {
-        PauseGamePanel.gameObject.SetActive(false);
-        Time.timeScale = 1;
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
-        firstPersonController.enabled = true;
-        gunRef.enabled = true;
-    }
-
-    void StaticDifficulty()
-    {
-        txt_StaticDifficultyState.text = st_StaticDifficultyName;
-
-        if(difficulty == Difficulty.EASY)
+        if (difficulty == Difficulty.EASY)
         {
             st_StaticDifficultyName = "Easy";
         }
@@ -176,20 +178,80 @@ public class OG_GameManager : MonoBehaviour
 
     void DifficultyProps()
     {
+        if(difficulty == Difficulty.EASY)
+        {
+            for (int i = 0; i < MediumItemsToDesable.Length; i++)
+            {
+                if (MediumItemsToDesable[i] != null)
+                {
+                    MediumItemsToDesable[i].SetActive(true);
+                }
+                else
+                    return;
+            }
+
+            gunRef.fl_soundRadius = 15f;
+        }
+
         if(difficulty == Difficulty.MEDIUM)
         {
             for (int i = 0; i < MediumItemsToDesable.Length; i++)
-            {               
-                MediumItemsToDesable[i].SetActive(false);
+            {
+                if (MediumItemsToDesable[i] != null)
+                {
+                    MediumItemsToDesable[i].SetActive(false);
+                }
+                else
+                    return;
             }
+
+
+            for (int i = 0; i < MediumItemsToEnable.Length; i++)
+            {
+                if (MediumItemsToEnable[i] != null)
+                {
+                    MediumItemsToEnable[i].SetActive(true);
+                }
+                else
+                    return;
+            }
+
+            for (int i = 0; i < HardItemsToDesable.Length; i++)
+            {
+                if (HardItemsToDesable[i] != null)
+                {
+                    HardItemsToDesable[i].SetActive(true);
+                }
+                else
+                    return;
+            }
+
+            gunRef.fl_soundRadius = 20f;
         }
 
         if (difficulty == Difficulty.HARD)
         {
             for (int i = 0; i < HardItemsToDesable.Length; i++)
             {
-                HardItemsToDesable[i].SetActive(false);
+                if (HardItemsToDesable[i] != null)
+                {
+                    HardItemsToDesable[i].SetActive(false);
+                }
+                else
+                    return;
             }
+
+            for (int i = 0; i < HardItemsToEnable.Length; i++)
+            {
+                if (HardItemsToEnable[i] != null)
+                {
+                    HardItemsToEnable[i].SetActive(true);
+                }
+                else
+                    return;
+            }
+
+            gunRef.fl_soundRadius = 25f;
         }
     }
 

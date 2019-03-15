@@ -134,8 +134,8 @@ public class OG_3D_Gun : MonoBehaviour
             transform.localPosition = Vector3.Lerp(transform.localPosition, aimPos, Time.deltaTime * fl_ADSSpeed);
             bl_isAiming = true;
             weaponSwRef.fl_swayAmount = 0f;
-            recoil = 0.5f;
-            spread = .3f;
+            recoil = .7f;
+            spread = .5f;
         }
         else
         {
@@ -143,7 +143,7 @@ public class OG_3D_Gun : MonoBehaviour
             bl_isAiming = false;
             weaponSwRef.fl_swayAmount = 0.1f;
             recoil = 1f;
-            spread = .6f;
+            spread = .8f;
         }
     }
 
@@ -168,10 +168,6 @@ public class OG_3D_Gun : MonoBehaviour
 
         if (Physics.Raycast(fpsCam.transform.position, CalculateSpread(spread, shootPoint), out hit, fl_range, layerMask))
         {
-            //float fl_fractionalDistance = (fl_scaledDmgComp - Vector3.Distance(transform.position, hit.transform.position)) / fl_scaledDmgComp;
-            //Debug.Log("Fractional distance is " + fl_fractionalDistance);
-            //float damage = fl_scaledDMG * fl_fractionalDistance + fl_minDMG;
-
             int int_randomDamage = Random.Range(in_minDMG, in_maxDMG);
             Debug.Log("Random damage is " + int_randomDamage);
 
