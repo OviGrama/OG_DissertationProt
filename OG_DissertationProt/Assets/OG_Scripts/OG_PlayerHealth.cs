@@ -45,7 +45,7 @@ public class OG_PlayerHealth : MonoBehaviour
         gameManager = GameObject.Find("_GameManager").GetComponent<OG_GameManager>();
         fl_maxHealth = 100;
         fl_currnetPcHealth = fl_maxHealth;
-        in_pcMaxLives = 0;
+        //in_pcMaxLives = 1;
         in_pcLives = in_pcMaxLives;
         fl_displayHealthInInsp = fl_currnetPcHealth;
 
@@ -121,7 +121,7 @@ public class OG_PlayerHealth : MonoBehaviour
             playerController.enabled = true;
             bl_playerDead = false;
             fl_currnetPcHealth = fl_maxHealth;
-            gameManager.fl_difficulty -= 0.75f;
+            gameManager.fl_difficulty -= 5f;
             in_pcLives--;
         }
     }
